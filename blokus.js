@@ -120,6 +120,7 @@ class Board{
     constructor(size){
         this.size = size;
         this.triangles = [];
+        this.points = [];
         // this.blocks = {};
         // kthis.clear()
         this.init();
@@ -130,9 +131,17 @@ class Board{
         for(var i=-this.size; i<=this.size; i++){
             for(var j=-this.size; j<=this.size; j++){
                 for(var k=-this.size; k<=this.size; k++){
-                    // this.indexs.push([i, j, k]);
-                    if((new IPoint(i, j, k)).is_triangle()){
-                        this.triangles.push([i, j, k]);
+                    var p = new IPoint(i, j, k);
+                    if(i != this.size && j != this.size && k != this.size){
+                        if(p.sum() == -2){
+                            this.triangles.push([i+1,j+1,k+1]);
+                        }else if(p.sum() == -1){
+                            this.triangles.push([i, j, k]);
+                        }
+
+                    }
+                    if(p.is_point()){
+                        this.points.push([i, j, k]);
                     }
                 }
             }
@@ -187,6 +196,9 @@ class IPoint{
     sub(ip){
         return new IPoint(this.i-ip.i, this.j-ip.j, this.k-ip.k);
     }
+    sub_scalar(s){
+        return new IPoint(this.i-s, this.j-s, this.k-s);
+    }
     sum(){
         return this.i + this.j + this.k;
     }
@@ -195,6 +207,20 @@ class IPoint{
     }
     equals(ip){
         return this.i == ip.i && this.j == ip.j && this.k == ip.k;
+    }
+    get_points_around_triangle(){
+        var s = this.sum();
+        var ps = [];
+        ps.push(new IPoint(this.i-s, this.j, this.k));
+        ps.push(new IPoint(this.i, this.j-s, this.k));
+        ps.push(new IPoint(this.i, this.j, this.k-s));
+        return ps;
+    }
+    static One(){
+        return new IPoint(1, 1, 1);
+    }
+    static Zero(){
+        return new IPoint(0, 0, 0);
     }
     static from_arr(arr){
         return new IPoint(arr[0], arr[1], arr[2]);
