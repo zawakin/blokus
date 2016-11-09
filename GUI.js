@@ -19,6 +19,17 @@ class BaseCanvas{
     }
 }
 
+
+var ColorInfo = {
+    forBoard : {
+        NONE : "white",
+        BLUE : "blue",
+        RED : "red",
+        GREEN : "green",
+        YELLOW : "yellow"
+    }
+};
+
 class GameCanvas extends BaseCanvas{
     constructor(game, ctx, pos, w, h){
         super(ctx, pos, w, h);
@@ -33,7 +44,8 @@ class GameCanvas extends BaseCanvas{
         // this.piececanvas = new PieceCanvas(this.game.players, this.ctx, piece_pos, piece_w, piece_h);
     }
     update(mouse){
-        this.mouse = mouse;
+        //updateを伝播させる
+        super.update(mouse);
         for(let canvas of this.all_canvas){
             canvas.update(mouse);
         }
@@ -53,12 +65,18 @@ class BoardCanvas extends BaseCanvas{
     constructor(board, ctx, pos, w, h){
         super(ctx, pos, w, h);
         this.board = board;
+        this.ip_cursor = new IPoint(-1000, -1000, -1000);
     }
     update(mouse){
         super.update(mouse);
         if(this.contains_mouse()){
             // console.log(this.rel);
             var _ijk = this.where_ijk();
+            // ifj
+            this.ip_cursor = _ijk
+            if(this.board.on_board(_ijk)){
+                this.board.blocks[_ijk.i][_ijk.j][_ijk.k] = 1;
+            }
             // console.log(_ijk);
         }
     }
@@ -67,11 +85,13 @@ class BoardCanvas extends BaseCanvas{
         this.ctx.fillRect(this.pos.x, this.pos.y, this.w, this.h);
         var size = 20;
         this.tri_size = size;
-        var vi = new Point(0, 1).multiply(size);
-        var vj = new Point(-sqrt(3)/2, -1/2).multiply(size);
-        var vk = new Point(+sqrt(3)/2, -1/2).multiply(size);
+        this.vi = new Point(0, 1).multiply(size);
+        this.vj = new Point(-sqrt(3)/2, -1/2).multiply(size);
+        this.vk = new Point(+sqrt(3)/2, -1/2).multiply(size);
+        var vi = this.vi; var vj = this.vj; var vk = this.vk;
+        //点の描画（確認用）
         for(let point of this.board.points){
-            var relp = vi.multiply(point[0]).add(vj.multiply(point[1]).add(vk.multiply(point[2])));
+            var relp = this.vi.multiply(point[0]).add(this.vj.multiply(point[1]).add(this.vk.multiply(point[2])));
             this.ctx.fillStyle = "black";
             this.ctx.beginPath();
             this.ctx.arc(this.abs_center.add(relp).x, this.abs_center.add(relp).y, 2, 0, 2*PI);
@@ -80,42 +100,49 @@ class BoardCanvas extends BaseCanvas{
             }
             this.ctx.fill();
         }
+        //三角形の描画
         for(let triangle of this.board.triangles){
-            var ps = IPoint.from_arr(triangle).get_points_around_triangle();
-            var relps = [];
-            for(let point of ps){
-                var relp = vi.multiply(point.i).add(vj.multiply(point.j).add(vk.multiply(point.k)));
-                relps.push(relp);
-            }
-            relps = Point.change_ratio_triangle(0.8, relps);
-            var absps = [];
-            for(let relp of relps){
-                absps.push(relp.add(this.abs_center));
-            }
-            this.ctx.fillStyle = "white";
-            this.ctx.beginPath();
-            this.ctx.moveTo(absps[0].x, absps[0].y);
-            this.ctx.lineTo(absps[1].x, absps[1].y);
-            this.ctx.lineTo(absps[2].x, absps[2].y);
-            this.ctx.closePath();
-            this.ctx.fill();
-
+            var color = this.board.blocks[triangle[0]][triangle[1]][triangle[2]];
+            this.draw_triangle(IPoint.from_arr(triangle), ColorInfo.forBoard[S_Color[color]]);
         }
+        // console.log(this.ip_cursor);
+        if(this.board.on_board(this.ip_cursor)){
+            this.draw_triangle(this.ip_cursor, "red");
+        }
+    }
+
+    draw_triangle(ip, color){
+        var ps = ip.get_points_around_triangle();
+        var relps = [];
+        for(let point of ps){
+            var relp = this.vi.multiply(point.i).add(this.vj.multiply(point.j).add(this.vk.multiply(point.k)));
+            relps.push(relp);
+        }
+        relps = Point.change_ratio_triangle(0.8, relps);
+        var absps = [];
+        for(let relp of relps){
+            absps.push(relp.add(this.abs_center));
+        }
+        console.log(color);
+        // console.log(ColorInfo.forBoard[S_Color[color]]);
+        this.ctx.fillStyle = color;
+        this.ctx.beginPath();
+        this.ctx.moveTo(absps[0].x, absps[0].y);
+        this.ctx.lineTo(absps[1].x, absps[1].y);
+        this.ctx.lineTo(absps[2].x, absps[2].y);
+        this.ctx.closePath();
+        this.ctx.fill();
+
     }
 
     where_ijk(){
         var p = this.rel.sub(this.center);
-        // var tri_h = sqrt(3) / 2 * this.tri_size;
         var tri_h = this.tri_size * 3 / 2;
         var _i = floor(p.y / tri_h);
         var vj = new Point(-sqrt(3)/2, -1/2);
         var vk = new Point(+sqrt(3)/2, -1/2);
         var _j = floor(p.dot(vj) / tri_h);
         var _k = floor(p.dot(vk) / tri_h);
-        // console.log(p);
-        // console.log(tri_h);
-        // console.log(p.y, tri_h, _i);
-        // console.log(vj);
         var res = new IPoint(_i, _j, _k);
         if(res.sum() == -2){
             //三角形を３本の直線が作ると考えたときには順方向の三角形は過小評価される

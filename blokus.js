@@ -131,23 +131,44 @@ class Board{
         for(var i=-this.size; i<=this.size; i++){
             for(var j=-this.size; j<=this.size; j++){
                 for(var k=-this.size; k<=this.size; k++){
-                    var p = new IPoint(i, j, k);
+                    var s = i + j + k;
                     if(i != this.size && j != this.size && k != this.size){
-                        if(p.sum() == -2){
+                        if(s == -2){
                             this.triangles.push([i+1,j+1,k+1]);
-                        }else if(p.sum() == -1){
+                        }else if(s == -1){
                             this.triangles.push([i, j, k]);
                         }
 
                     }
-                    if(p.is_point()){
+                    if(s == 0){
                         this.points.push([i, j, k]);
                     }
                 }
             }
         }
+        for(let triangle of this.triangles){
+            if(!this.blocks[triangle[0]]){
+                this.blocks[triangle[0]] = {};
+            }
+            if(!this.blocks[triangle[0]][triangle[1]]){
+                this.blocks[triangle[0]][triangle[1]] = {};
+            }
+            this.blocks[triangle[0]][triangle[1]][triangle[2]] = Color.NONE;
+        }
+        // console.log(this.blocks);
     }
 
+    on_board(ip){
+        var i = ip.i;
+        var j = ip.j;
+        var k = ip.k;
+        if(!(-this.size<=i && i < this.size
+            && -this.size<=j && j < this.size
+            && -this.size<=k && k < this.size)) return false;
+        if(i == this.size || j == this.size || k == this.size) return false;
+        if(!ip.is_triangle()) return false;
+        return true;
+    }
     put(te){
         // for(let cell of piece.)
     }
