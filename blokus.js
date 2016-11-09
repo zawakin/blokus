@@ -159,14 +159,21 @@ class Board{
     }
 
     on_board(ip){
-        var i = ip.i;
-        var j = ip.j;
-        var k = ip.k;
+        var i, j, k;
+        if(ip.sum() == 1){
+            i = ip.i - 1;
+            j = ip.j - 1;
+            k = ip.k - 1;
+        }else if(ip.sum() == -1){
+            i = ip.i;
+            j = ip.j;
+            k = ip.k;
+        }else{
+            return false;
+        }
         if(!(-this.size<=i && i < this.size
             && -this.size<=j && j < this.size
             && -this.size<=k && k < this.size)) return false;
-        if(i == this.size || j == this.size || k == this.size) return false;
-        if(!ip.is_triangle()) return false;
         return true;
     }
     put(te){
