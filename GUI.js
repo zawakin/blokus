@@ -1,4 +1,6 @@
 class BaseCanvas{
+    //canvasの抽象クラス
+    //これを継承して具体的なクラスを作る
     constructor(ctx, pos, w, h){
         this.ctx = ctx;
         this.pos = pos;
@@ -6,14 +8,16 @@ class BaseCanvas{
         this.h = h;
     }
     update(mouse){
-        this.rel = mouse.sub(this.pos);
-        this.center = new Point(this.w / 2, this.h / 2);
-        this.abs_center = this.center.add(this.pos);
+        this.rel = mouse.sub(this.pos); //マウスの相対位置
+        this.center = new Point(this.w / 2, this.h / 2); //canvasの中心
+        this.abs_center = this.center.add(this.pos); //canvasの絶対中心
     }
     draw(){
+        //canvasの描画（オーバーライド用）
 
     }
     contains_mouse(){
+        //このcanvasの中にマウスカーソルがあるか
         return 0 <= this.rel.x && this.rel.x <= this.w
                     && 0 <= this.rel.y && this.rel.y <= this.h
     }
@@ -31,20 +35,23 @@ var ColorInfo = {
 };
 
 class GameCanvas extends BaseCanvas{
+    //ゲームをまとめるcanvasクラス
+    //個々のcanvasを持つ
     constructor(game, ctx, pos, w, h){
-        super(ctx, pos, w, h);
+        super(ctx, pos, w, h); //親のコンストラクタを呼ぶ
         this.game = game;
-        var board_pos = new Point(100, 50);
+        var board_pos = new Point(100, 50); //ボードの相対位置、幅、高さ
         var board_w = 700;
         var board_h = 700;
         this.boardcanvas = new BoardCanvas(this.game.board, this.ctx, board_pos, board_w, board_h);
         this.all_canvas = [];
-        this.all_canvas.push(this.boardcanvas);
+        this.all_canvas.push(this.boardcanvas); //ここにcanvasを詰め込む
         // var piece_pos = new Point(V)
         // this.piececanvas = new PieceCanvas(this.game.players, this.ctx, piece_pos, piece_w, piece_h);
     }
     update(mouse){
-        //updateを伝播させる
+        //drawする前にユーザーの操作を処理するための関数
+        //小さいcanvasにupdateを伝播させる
         super.update(mouse);
         for(let canvas of this.all_canvas){
             canvas.update(mouse);
@@ -62,10 +69,11 @@ class GameCanvas extends BaseCanvas{
 }
 
 class BoardCanvas extends BaseCanvas{
+    //ボードを表示するためのcanvasクラス
     constructor(board, ctx, pos, w, h){
         super(ctx, pos, w, h);
         this.board = board;
-        this.ip_cursor = new IPoint(-1000, -1000, -1000);
+        this.ip_cursor = new IPoint(-1000, -1000, -1000); //マウスのボード座標系表示
     }
     update(mouse){
         super.update(mouse);
@@ -105,13 +113,14 @@ class BoardCanvas extends BaseCanvas{
             var color = this.board.blocks[triangle[0]][triangle[1]][triangle[2]];
             this.draw_triangle(IPoint.from_arr(triangle), ColorInfo.forBoard[S_Color[color]]);
         }
-        // console.log(this.ip_cursor);
+        //カーソルは盤上にマウスが来たときのみ表示
         if(this.board.on_board(this.ip_cursor)){
             this.draw_triangle(this.ip_cursor, "red");
         }
     }
 
     draw_triangle(ip, color){
+        //ボード座標系の三角形に色を付ける
         var ps = ip.get_points_around_triangle();
         var relps = [];
         for(let point of ps){
@@ -123,7 +132,7 @@ class BoardCanvas extends BaseCanvas{
         for(let relp of relps){
             absps.push(relp.add(this.abs_center));
         }
-        console.log(color);
+        // console.log(color);
         // console.log(ColorInfo.forBoard[S_Color[color]]);
         this.ctx.fillStyle = color;
         this.ctx.beginPath();
@@ -136,6 +145,8 @@ class BoardCanvas extends BaseCanvas{
     }
 
     where_ijk(){
+        //マウスの位置からボード座標系への変換
+        //updateの後に呼ばれなければならない
         var p = this.rel.sub(this.center);
         var tri_h = this.tri_size * 3 / 2;
         var _i = floor(p.y / tri_h);
@@ -158,6 +169,7 @@ class BoardCanvas extends BaseCanvas{
 }
 
 class PieceCanvas extends BaseCanvas{
+    //駒台のcanvasクラス
     constructor(players, ctx, pos, w, h){
         super(ctx, pos, w, h);
         this.players = player;

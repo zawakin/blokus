@@ -1,6 +1,7 @@
+
 var State = {
     BEFORE : 0,
-    STARTED : 1,
+    STARTED : 1, //ゲームの進行状況
     FINISHED : 2
 };
 var Color = {
@@ -10,9 +11,10 @@ var Color = {
     GREEN:3,
     YELLOW:4
 };
-var Direction = {UP : 0, DOWN : 1};
 
 function swap_key_value(dict){
+    //オブジェクトのkeyとvalueを入れ替える
+    //例えば、Colorの数字を入れると色の文字列が返ってくるものを生成する
     var values = Object.values(dict);
     var keys = Object.keys(dict);
     var res = {};
@@ -21,7 +23,13 @@ function swap_key_value(dict){
     }
     return res;
 }
+
+var S_State = swap_key_value(State);
+var S_Color = swap_key_value(Color);
+var S_Direction = swap_key_value(Direction);
+
 function deepCopy(arr2d){
+    //２次元配列のdeepcopy
     var L = arr2d.length;
     var res = [];
     for(var i=0; i<L; i++){
@@ -33,11 +41,10 @@ function deepCopy(arr2d){
     return res;
 }
 
-var S_State = swap_key_value(State);
-var S_Color = swap_key_value(Color);
-var S_Direction = swap_key_value(Direction);
 
 class Game{
+    //ゲームを管理するクラス
+    //プレイヤーやボード、手番などを保持する
     constructor(size, n_player){
         this.board = new Board(size, n_player);
         this.n_player = n_player;
@@ -90,6 +97,8 @@ class Game{
 }
 
 class Player{
+    //プレイヤーを表すクラス
+    //駒台を持っている
     constructor(color){
         this.color = color;
     }
@@ -110,6 +119,7 @@ class Player{
 }
 
 class Te{
+    //手の内部表現クラス（未実装）
     constructor(piece, rotation, pivot){
 
     }
@@ -117,15 +127,17 @@ class Te{
 
 
 class Board{
+    //盤や盤に置かれている色を保持するクラス
     constructor(size){
-        this.size = size;
-        this.triangles = [];
-        this.points = [];
+        this.size = size; //ボードの一辺の長さ（通常は９）
+        this.triangles = []; //三角形のボード座標表示を保存
+        this.points = []; //点のボード座標表示を保存
         // this.blocks = {};
         // kthis.clear()
-        this.init();
+        this.clear();
     }
-    init(){
+    clear(){
+        //ボードをまっさらにする
         this.blocks = {};
         this.indexs = [];
         for(var i=-this.size; i<=this.size; i++){
@@ -134,6 +146,8 @@ class Board{
                     var s = i + j + k;
                     if(i != this.size && j != this.size && k != this.size){
                         if(s == -2){
+                            //順方向は自然に計算すると和が－２になるが
+                            //ゲーム的には和が１であって欲しい
                             this.triangles.push([i+1,j+1,k+1]);
                         }else if(s == -1){
                             this.triangles.push([i, j, k]);
@@ -147,6 +161,7 @@ class Board{
             }
         }
         for(let triangle of this.triangles){
+            //盤の色をまっさらにする
             if(!this.blocks[triangle[0]]){
                 this.blocks[triangle[0]] = {};
             }
@@ -159,6 +174,7 @@ class Board{
     }
 
     on_board(ip){
+        //盤の上にボード座標系で表される三角形が存在するか
         var i, j, k;
         if(ip.sum() == 1){
             i = ip.i - 1;
@@ -180,8 +196,6 @@ class Board{
         // for(let cell of piece.)
     }
 
-    clear(){
-    }
 
     print(){
     }
@@ -190,6 +204,7 @@ class Board{
 
 
 class IPoint{
+    //ボード座標系を表現する３成分のクラス
     constructor(i, j, k){
         this.i = i;
         this.j = j;
