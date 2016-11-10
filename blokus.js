@@ -124,7 +124,7 @@ class Te{
         this.piece = piece;
         this.n_rot = n_rot;
         this.n_pivot = n_pivot;
-        // this.piece.rotate(n_rot, n_pivot);
+        this.piece.rotate(n_rot, n_pivot);
     }
 
     get slided_content(){
@@ -200,6 +200,7 @@ class Board{
         return true;
     }
     put(te){
+        //盤上に置く前にcan_putで確認せよ
         var content = te.slided_content;
         for(let ip of content){
             this.blocks[ip.i][ip.j][ip.k] = te.piece.color;
@@ -207,8 +208,8 @@ class Board{
     }
 
     can_put(te){
-        console.log(te.ip);
-        console.log(te);
+        // console.log(te.ip);
+        // console.log(te);
         return te.ip.sum() == te.piece.content[te.n_pivot].sum();
     }
 
@@ -237,22 +238,24 @@ class IPoint{
     is_triangle(){
         return this.sum() == 1 || this.sum() == -1;
     }
-    rotate(n){
-        switch(n%3){
-            case 0:
-                return this.copy();
-            case 1:
-                return new IPoint(this.k, this.i, this.j);
-            case 2:
-                return new IPoint(this.j, this.k, this.i);
-        }
-        console.log("error[001]");
+    // rotate(n){
+    //     switch(n%3){
+    //         case 0:
+    //             return this.copy();
+    //         case 1:
+    //             return new IPoint(this.k, this.i, this.j);
+    //         case 2:
+    //             return new IPoint(this.j, this.k, this.i);
+    //     }
+    //     console.log("error[001]");
+    // }
+    rotate(){
+        return new IPoint(this.k, this.i, this.j);
     }
     slide_content(te){
         var content = te.piece.content;
         var n_pivot = te.n_pivot;
         var res = [];
-        console.log(content[n_pivot]);
         var one = new IPoint(content[n_pivot].sum(),  0, 0);
         if(one.i != 1 && one.i != -1) console.log("error");
         var offset = content[n_pivot].sub(one).add(this.sub(one));
@@ -307,6 +310,7 @@ class IPoint{
 
 var BasePieceSet = [
     [[0,0,1],[1,0,0],[0,1,0]]
+    // [[0,0,1], []]
 ];
 var PieceSet = [];
 for(var i=0; i < BasePieceSet.length; i++){
@@ -327,23 +331,52 @@ class Piece{
     }
 
 
+    // rotate(n_times, n_pivot){
+    //     var pivot = this.content[n_pivot];
+    //     if(pivot.is_forward_triangle()){
+    //         var center = new IPoint(pivot.i-1, pivot.j, pivot.k);
+    //         var offset = new IPoint(1, -1, 0);
+    //     }else if(pivot.is_backward_triangle()){
+    //         var center = new IPoint(pivot.i+1, pivot.j, pivot.k);
+    //         var offset = new IPoint(-1, 1, 0);
+    //     }else{
+    //         console.log("pivot is invalid.");
+    //     }
+    //     for(var i=0; i < this.content.length; i++){
+    //         this.content[i] = this.content[i].sub(center).rotate(n_times)
+    //                         .add(center).add(offset);
+    //     }
+    // }
+    // rotate(n_times, n_pivot){
+    //
+    // }
+
+    // rotate(n_times, n_pivot){
+    //     for(var n=0; n < n_times % 3; n++){
+    //
+    //     }
+    // }
     rotate(n_times, n_pivot){
-        var pivot = this.content[n_pivot];
-        if(pivot.is_forward_triangle()){
-            var center = new IPoint(pivot.i-1, pivot.j, pivot.k);
-            var offset = new IPoint(1, -1, 0);
-        }else if(pivot.is_backward_triangle()){
-            var center = new IPoint(pivot.i+1, pivot.j, pivot.k);
-            var offset = new IPoint(-1, 1, 0);
-        }else{
-            console.log("pivot is invalid.");
-        }
-        for(var i=0; i < this.content.length; i++){
-            this.content[i] = this.content[i].sub(center).rotate(n_times)
-                            .add(center).add(offset);
+        for(var n=0; n < n_times % 3; n++){
+            var pivot = this.content[n_pivot];
+            if(pivot.is_forward_triangle()){
+                var center = new IPoint(pivot.i-1, pivot.j, pivot.k);
+                var offset = new IPoint(1, -1, 0);
+            }else if(pivot.is_backward_triangle()){
+                var center = new IPoint(pivot.i+1, pivot.j, pivot.k);
+                var offset = new IPoint(-1, 1, 0);
+            }else{
+                console.log("pivot is invalid.");
+            }
+            // console.log(center);
+            // console.log(offset);
+
+            for(var i=0; i < this.content.length; i++){
+                this.content[i] = this.content[i].sub(center).rotate()
+                                .add(center).add(offset);
+            }
         }
     }
-
     static copy_from_original_content(num){
         var piece = [];
         for(var i=0; i < PieceSet[num].length; i++){

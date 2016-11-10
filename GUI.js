@@ -82,6 +82,8 @@ class BoardCanvas extends BaseCanvas{
         super(ctx, pos, w, h);
         this.board = board;
         this.ip_cursor = new IPoint(-1000, -1000, -1000); //マウスのボード座標系表示
+        this.selected = false;
+        this._rot = 0;
     }
     update(user){
         super.update(user);
@@ -90,10 +92,17 @@ class BoardCanvas extends BaseCanvas{
             var _ijk = this.where_ijk();
             // ifj
             this.ip_cursor = _ijk
+            if(this.board.on_board(_ijk)){
+                this.te = new Te(_ijk, new Piece(0, true, Color.YELLOW), this._rot, 1);
+                this.selected = true;
+            }
             if(this.board.on_board(_ijk) && user.clicked){
+                this._rot += 1;
+                console.log(this._rot);
                 // this.board.blocks[_ijk.i][_ijk.j][_ijk.k] = 1;
-                var te = new Te(_ijk, new Piece(0, true, Color.YELLOW), 0, 0);
-                if(this.board.can_put(te)) this.board.put(te);
+
+                // console.log(te.slided_content);
+                // if(this.board.can_put(te)) this.board.put(te);
             }
             // console.log(_ijk);
         }else{
@@ -128,6 +137,11 @@ class BoardCanvas extends BaseCanvas{
         //カーソルは盤上にマウスが来たときのみ表示
         if(this.board.on_board(this.ip_cursor)){
             this.draw_triangle(this.ip_cursor, "red");
+        }
+        if(this.selected && this.board.can_put(this.te)){
+            for(let ip of this.te.slided_content){
+                this.draw_triangle(ip, "blue");
+            }
         }
     }
 
