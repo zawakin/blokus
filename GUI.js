@@ -7,15 +7,22 @@ class BaseCanvas{
         this.w = w;
         this.h = h;
     }
-    update(mouse){
-        this.rel = mouse.sub(this.pos); //マウスの相対位置
+    update(user){
+        this.clicked = user.clicked;
+        this.rel = user.mouse.sub(this.pos); //マウスの相対位置
         this.center = new Point(this.w / 2, this.h / 2); //canvasの中心
         this.abs_center = this.center.add(this.pos); //canvasの絶対中心
+
     }
     draw(){
         //canvasの描画（オーバーライド用）
 
     }
+    // post_processing(){
+    //     //後処理を担当。
+    //
+    // }
+
     contains_mouse(){
         //このcanvasの中にマウスカーソルがあるか
         return 0 <= this.rel.x && this.rel.x <= this.w
@@ -49,12 +56,13 @@ class GameCanvas extends BaseCanvas{
         // var piece_pos = new Point(V)
         // this.piececanvas = new PieceCanvas(this.game.players, this.ctx, piece_pos, piece_w, piece_h);
     }
-    update(mouse){
+    update(user){
         //drawする前にユーザーの操作を処理するための関数
         //小さいcanvasにupdateを伝播させる
-        super.update(mouse);
+        super.update(user);
+
         for(let canvas of this.all_canvas){
-            canvas.update(mouse);
+            canvas.update(user);
         }
     }
     draw(){
@@ -75,15 +83,17 @@ class BoardCanvas extends BaseCanvas{
         this.board = board;
         this.ip_cursor = new IPoint(-1000, -1000, -1000); //マウスのボード座標系表示
     }
-    update(mouse){
-        super.update(mouse);
+    update(user){
+        super.update(user);
         if(this.contains_mouse()){
             // console.log(this.rel);
             var _ijk = this.where_ijk();
             // ifj
             this.ip_cursor = _ijk
-            if(this.board.on_board(_ijk)){
-                this.board.blocks[_ijk.i][_ijk.j][_ijk.k] = 1;
+            if(this.board.on_board(_ijk) && user.clicked){
+                // this.board.blocks[_ijk.i][_ijk.j][_ijk.k] = 1;
+                var te = new Te(_ijk, new Piece(0, true, Color.YELLOW), 0, 0);
+                if(this.board.can_put(te)) this.board.put(te);
             }
             // console.log(_ijk);
         }else{
@@ -145,6 +155,8 @@ class BoardCanvas extends BaseCanvas{
         this.ctx.fill();
 
     }
+
+    // draw_piec
 
     where_ijk(){
         //マウスの位置からボード座標系への変換

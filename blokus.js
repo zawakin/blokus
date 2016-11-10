@@ -119,8 +119,16 @@ class Player{
 
 class Te{
     //手の内部表現クラス（未実装）
-    constructor(piece, rotation, pivot){
+    constructor(ip, piece, n_rot, n_pivot){
+        this.ip = ip;
+        this.piece = piece;
+        this.n_rot = n_rot;
+        this.n_pivot = n_pivot;
+        // this.piece.rotate(n_rot, n_pivot);
+    }
 
+    get slided_content(){
+        return this.ip.slide_content(this);
     }
 }
 
@@ -192,9 +200,17 @@ class Board{
         return true;
     }
     put(te){
-        // for(let cell of piece.)
+        var content = te.slided_content;
+        for(let ip of content){
+            this.blocks[ip.i][ip.j][ip.k] = te.piece.color;
+        }
     }
 
+    can_put(te){
+        console.log(te.ip);
+        console.log(te);
+        return te.ip.sum() == te.piece.content[te.n_pivot].sum();
+    }
 
     print(){
     }
@@ -231,6 +247,25 @@ class IPoint{
                 return new IPoint(this.j, this.k, this.i);
         }
         console.log("error[001]");
+    }
+    slide_content(te){
+        var content = te.piece.content;
+        var n_pivot = te.n_pivot;
+        var res = [];
+        console.log(content[n_pivot]);
+        var one = new IPoint(content[n_pivot].sum(),  0, 0);
+        if(one.i != 1 && one.i != -1) console.log("error");
+        var offset = content[n_pivot].sub(one).add(this.sub(one));
+        for(let grid of content){
+            res.push(grid.add(offset).add(one.sub(content[n_pivot])));
+        }
+        return res;
+        // if(content[n_pivot].sum() == 1){
+        // }else if(content[n_pivot].sum() == -1){
+        //     var one = new IPoint(-1, 0, 0);
+        //     var offset = content[n_pivot].sub(one).add(this.sub(one));
+        //
+        // }
     }
     add(ip){
         return new IPoint(this.i+ip.i, this.j+ip.j, this.k+ip.k);
@@ -290,6 +325,7 @@ class Piece{
         this.content = Piece.copy_from_original_content(this.num);
         this.color = color;
     }
+
 
     rotate(n_times, n_pivot){
         var pivot = this.content[n_pivot];
