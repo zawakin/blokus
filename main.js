@@ -7,7 +7,7 @@ $(function(){
     game.start();
 
     var gamecanvas = new GameCanvas(game, ctx, new Point(0, 0), 1000, 800);
-
+    
     $("#cnvs").mousemove((e)=>{
 
         mouse = new Point(e.pageX-e.target.offsetLeft, e.pageY-e.target.offsetTop);
@@ -15,8 +15,6 @@ $(function(){
     function render(){
         gamecanvas.update(mouse);
         gamecanvas.draw();
-        // console.log(game.board.blocks);
-        // console.log(ColorInfo.forBoard[S_Color[]]);
     }
 
     // render();

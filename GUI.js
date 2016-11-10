@@ -86,6 +86,8 @@ class BoardCanvas extends BaseCanvas{
                 this.board.blocks[_ijk.i][_ijk.j][_ijk.k] = 1;
             }
             // console.log(_ijk);
+        }else{
+            this.ip_cursor = new IPoint(-1000, -1000, -1000);
         }
     }
     draw(){
