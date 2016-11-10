@@ -357,7 +357,8 @@ class Piece{
     //     }
     // }
     rotate(n_times, n_pivot){
-        for(var n=0; n < n_times % 3; n++){
+        for(var n=0; n < imod(n_times, 3); n++){
+            // console.log(n_times % 3, "hoge");
             var pivot = this.content[n_pivot];
             if(pivot.is_forward_triangle()){
                 var center = new IPoint(pivot.i-1, pivot.j, pivot.k);

@@ -96,8 +96,8 @@ class BoardCanvas extends BaseCanvas{
                 this.te = new Te(_ijk, new Piece(0, true, Color.YELLOW), this._rot, 1);
                 this.selected = true;
             }
-            if(this.board.on_board(_ijk) && user.clicked){
-                this._rot += 1;
+            if(this.board.on_board(_ijk) && user.wheel != 0){
+                this._rot += user.wheel;
                 console.log(this._rot);
                 // this.board.blocks[_ijk.i][_ijk.j][_ijk.k] = 1;
 
