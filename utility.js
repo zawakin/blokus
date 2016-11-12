@@ -72,6 +72,9 @@ class Point{
     // return
     return this.div(this.norm());
   }
+  copy(){
+      return new Point(this.x, this.y);
+  }
   static One(){
       return new Point(1,1);
   }

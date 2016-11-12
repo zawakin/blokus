@@ -8,6 +8,7 @@ class BaseCanvas{
         this.h = h;
     }
     update(user){
+        this.user = user;
         this.clicked = user.clicked;
         this.rel = user.mouse.sub(this.pos); //マウスの相対位置
         this.center = new Point(this.w / 2, this.h / 2); //canvasの中心
@@ -53,6 +54,10 @@ class GameCanvas extends BaseCanvas{
         this.boardcanvas = new BoardCanvas(this.game.board, this.ctx, board_pos, board_w, board_h);
         this.all_canvas = [];
         this.all_canvas.push(this.boardcanvas); //ここにcanvasを詰め込む
+
+        this.testcanvas = new TestCanvas(this.ctx, new Point(300,300), 300, 300);
+        this.all_canvas.push(this.testcanvas)
+
         // let piece_pos = new Point(V)
         // this.piececanvas = new PieceCanvas(this.game.players, this.ctx, piece_pos, piece_w, piece_h);
     }
@@ -196,10 +201,63 @@ class BoardCanvas extends BaseCanvas{
 
 }
 
-class PieceCanvas extends BaseCanvas{
+class KomadaiCanvas extends BaseCanvas{
     //駒台のcanvasクラス
     constructor(players, ctx, pos, w, h){
         super(ctx, pos, w, h);
         this.players = player;
     }
+}
+
+class PieceCanvas extends BaseCanvas{
+    constructor(piece, nrot_30, ctx, pos, w, h){
+        super(ctx, pos, w, h);
+        this.piece = piece;
+        this.nrot_30 = nrot_30;
+    }
+    update(user){
+        super.update(user);
+    }
+    contains_mouse(){
+
+    }
+
+}
+
+class TestCanvas extends BaseCanvas{
+    constructor(ctx, pos, w, h){
+        super(ctx, pos, w, h);
+        this.dragging = false;
+    }
+    update(user){
+        super.update(user);
+        $("#drag").text(`${this.user.mousedown} ${this.contains_mouse()}`)
+
+        if(this.dragging && this.user.mousedown){
+            this.dragging = false;
+        }else{
+            if(this.user.mousedown && this.contains_mouse()){
+                //ドラッグの開始
+                this.dragging = true;
+                this.rel_before = this.rel.copy();
+            }else{
+                if(this.dragging){
+                    // console.log(this.rel_before);
+                    this.pos = this.pos.add(this.rel.sub(this.rel_before));
+                }
+            }
+            if(this.dragging && this.user.mouseup){
+                this.dragging = false;
+            }
+        }
+        this.user.mousedown = false;
+        this.user.mouseup = false;
+    }
+    draw(){
+        this.ctx.fillStyle = "black";
+        this.ctx.fillRect(this.pos.x, this.pos.y, this.w, this.h);
+    }
+    // contains_mouse(){
+    //
+    // }
 }

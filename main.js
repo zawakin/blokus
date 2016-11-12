@@ -1,11 +1,14 @@
 $(function(){
 
-    let ctx = $("#cnvs")[0].getContext("2d");
+    const ctx = $("#cnvs")[0].getContext("2d");
     function init_user(){
         let user_base = {
             mouse : new Point(0, 0),
             clicked : false,
-            wheel : 0
+            wheel : 0,
+            mousedown : false, //これらはイベントであり状態ではない
+            mouseup : false,
+            keycodes : []
         }
         return user_base;
     }
@@ -17,6 +20,7 @@ $(function(){
 
     let gamecanvas = new GameCanvas(game, ctx, new Point(0, 0), 1000, 800);
 
+    $("")
     $("#cnvs").mousemove((e)=>{
 
         user.mouse = new Point(e.pageX-e.target.offsetLeft, e.pageY-e.target.offsetTop);
@@ -25,6 +29,15 @@ $(function(){
     $("#cnvs").click(e=>{
         user.clicked = true;
 
+    });
+
+    $("#debugbox").append("<h2 id='drag'>a</h2>");
+    $("#cnvs").mousedown((e)=>{
+        user.mousedown = true;
+    });
+
+    $("#cnvs").mouseup((e)=>{
+        user.mouseup = true;
     });
 
     $("#cnvs").mousewheel((eo, delta, deltaX, deltaY)=>{
