@@ -1,4 +1,3 @@
-console.log("gui");
 class BaseCanvas{
     //canvasの抽象クラス
     //これを継承して具体的なクラスを作る
@@ -67,11 +66,19 @@ class BaseCanvas{
 
 var ColorInfo = {
     forBoard : {
-        NONE : "white",
-        BLUE : "blue",
-        RED : "red",
-        GREEN : "green",
-        YELLOW : "yellow"
+        NONE : "gray",
+        BLUE : "rgba(0,0,255,0.9)",
+        RED : "rgba(255,0,0,0.9)",
+        GREEN : "rgba(0,255,0,0.0.9)",
+        YELLOW : "rgba(255,255,0,0. 5)"
+    },
+    forKomadai : {
+        NONE : "gray",
+        BLUE : "rgba(0,0,255,0.8)",
+        RED : "rgba(255,0,0,0.8)",
+        GREEN : "rgba(0,255,0,0.8)",
+        YELLOW : "rgba(255,255,0,0.8)"
+
     }
 };
 
@@ -96,7 +103,7 @@ class GameCanvas extends BaseCanvas{
 
         // console.log(i);
         console.log(this.game.n_player);
-        let sukima = 5;
+        let sukima = 5 / 500 * this.boardcanvas.w;
         let komadai_h = (this.boardcanvas.h - 2 * sukima) / 3;
         let komadai_w = this.boardcanvas.w / 3;
         for(let i=1; i<this.game.n_player; i++){
@@ -142,8 +149,10 @@ class GameCanvas extends BaseCanvas{
     }
     draw(){
         this.ctx.clearRect(this.pos.x, this.pos.y, this.w, this.h);
-        this.ctx.fillStyle = "orange";
+        this.ctx.fillStyle = "rgba(220,220,220,1)";
         this.ctx.fillRect(this.pos.x, this.pos.y, this.w, this.h);
+        this.ctx.lineWidth = 5.0;
+        this.ctx.strokeRect(this.pos.x, this.pos.y, this.w, this.h);
         for(let canvas of this.all_canvas){
             canvas.draw();
         }
@@ -198,6 +207,8 @@ class BoardCanvas extends BaseCanvas{
     draw(){
         this.ctx.fillStyle = "skyblue";
         this.ctx.fillRect(this.pos.x, this.pos.y, this.w, this.h);
+        this.ctx.lineWidth = 5.0;
+        this.ctx.strokeRect(this.pos.x, this.pos.y, this.w, this.h);
         let size = 20 / 700 * this.w;
         this.tri_size = size;
         this.vi = new Point(0, 1).multiply(size);
@@ -295,8 +306,19 @@ class KomadaiCanvas extends BaseCanvas{
     }
 
     draw(){
-        this.ctx.fillStyle = ColorInfo.forBoard[S_Color[this.color]];
+        this.ctx.fillStyle = ColorInfo.forKomadai[S_Color[this.color]];
         this.ctx.fillRect(this.pos.x, this.pos.y, this.w, this.h);
+        this.ctx.fillStyle = "black"
+        this.ctx.lineWidth = 3;
+        this.ctx.strokeRect(this.pos.x, this.pos.y, this.w, this.h);
+        // this.ctx.beginPath();
+        // this.ctx.moveTo(this.pos.x, this.pos.y);
+        // this.ctx.lineTo(this.pos.x+this.w, this.pos.y);
+        // this.ctx.lineTo(this.pos.x+this.w, this.pos.y+this.h);
+        // this.ctx.lineTo(this.pos.x, this.pos.y+this.h);
+        // this.ctx.lineTo(this.pos.x, this.pos.y);
+        // this.ctx.stroke();
+        this.ctx.lineWidth = 1.0;
     }
 }
 
@@ -305,8 +327,10 @@ class MyKomadaiCanvas extends KomadaiCanvas{
         super(game, my_color, ctx, pos, w, h);
     }
     draw(){
-        this.ctx.fillStyle = ColorInfo.forBoard[S_Color[this.color]];
+        this.ctx.fillStyle = ColorInfo.forKomadai[S_Color[this.color]];
         this.ctx.fillRect(this.pos.x, this.pos.y, this.w, this.h);
+        this.ctx.lineWidth = 3;
+        this.ctx.strokeRect(this.pos.x, this.pos.y, this.w, this.h);
     }
 }
 
