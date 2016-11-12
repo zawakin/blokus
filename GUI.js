@@ -6,6 +6,8 @@ class BaseCanvas{
         this.pos = pos;
         this.w = w;
         this.h = h;
+        this.draggable = true;
+        this.dragging = false;
     }
     update(user){
         this.user = user;
@@ -13,7 +15,6 @@ class BaseCanvas{
         this.rel = user.mouse.sub(this.pos); //マウスの相対位置
         this.center = new Point(this.w / 2, this.h / 2); //canvasの中心
         this.abs_center = this.center.add(this.pos); //canvasの絶対中心
-
     }
     draw(){
         //canvasの描画（オーバーライド用）
@@ -23,6 +24,33 @@ class BaseCanvas{
     //     //後処理を担当。
     //
     // }
+
+    available_drag(flag){
+        this.draggable = flag;
+    }
+    drag(){
+        if(!this.draggable) return
+        {
+            if(this.user.mousedown){
+                if(this.contains_mouse()){
+                    this.dragging = true;
+                    this.rel_before = this.rel.copy();
+                    return true;
+                }else{
+                    this.dragging = false;
+                }
+            }else if(this.user.mouseup){
+                console.log("mouseup");
+                this.dragging = false;
+            }else{
+                if(this.dragging){
+                    this.pos = this.pos.add(this.rel.sub(this.rel_before));
+                    this.update(this.user);
+                }
+            }
+        }
+        return false;
+    }
 
     contains_mouse(){
         //このcanvasの中にマウスカーソルがあるか
@@ -51,12 +79,13 @@ class GameCanvas extends BaseCanvas{
         let board_pos = new Point(100, 50); //ボードの相対位置、幅、高さ
         let board_w = 700;
         let board_h = 700;
-        this.boardcanvas = new BoardCanvas(this.game.board, this.ctx, board_pos, board_w, board_h);
-        this.all_canvas = [];
-        this.all_canvas.push(this.boardcanvas); //ここにcanvasを詰め込む
 
+        this.all_canvas = [];
+        this.boardcanvas = new BoardCanvas(this.game.board, this.ctx, board_pos, board_w, board_h);
+        this.all_canvas.push(this.boardcanvas); //ここにcanvasを詰め込む
         this.testcanvas = new TestCanvas(this.ctx, new Point(300,300), 300, 300);
-        this.all_canvas.push(this.testcanvas)
+        this.all_canvas.push(this.testcanvas);
+
 
         // let piece_pos = new Point(V)
         // this.piececanvas = new PieceCanvas(this.game.players, this.ctx, piece_pos, piece_w, piece_h);
@@ -68,6 +97,10 @@ class GameCanvas extends BaseCanvas{
 
         for(let canvas of this.all_canvas){
             canvas.update(user);
+        }
+        for(let i=this.all_canvas.length-1; i>=0; i--){
+            let canvas = this.all_canvas[i];
+            if(canvas.drag()) break;
         }
     }
     draw(){
@@ -227,37 +260,15 @@ class PieceCanvas extends BaseCanvas{
 class TestCanvas extends BaseCanvas{
     constructor(ctx, pos, w, h){
         super(ctx, pos, w, h);
-        this.dragging = false;
+        // this.dragging = false;
     }
     update(user){
         super.update(user);
-        $("#drag").text(`${this.user.mousedown} ${this.contains_mouse()}`)
-
-        if(this.dragging && this.user.mousedown){
-            this.dragging = false;
-        }else{
-            if(this.user.mousedown && this.contains_mouse()){
-                //ドラッグの開始
-                this.dragging = true;
-                this.rel_before = this.rel.copy();
-            }else{
-                if(this.dragging){
-                    // console.log(this.rel_before);
-                    this.pos = this.pos.add(this.rel.sub(this.rel_before));
-                }
-            }
-            if(this.dragging && this.user.mouseup){
-                this.dragging = false;
-            }
-        }
-        this.user.mousedown = false;
-        this.user.mouseup = false;
+        $("#drag").text(`${this.user.mousedown} ${this.contains_mouse()} ${this.dragging}`)
     }
     draw(){
+        console.log(this.dragging);
         this.ctx.fillStyle = "black";
         this.ctx.fillRect(this.pos.x, this.pos.y, this.w, this.h);
     }
-    // contains_mouse(){
-    //
-    // }
 }

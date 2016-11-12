@@ -33,7 +33,12 @@ $(function(){
 
     $("#debugbox").append("<h2 id='drag'>a</h2>");
     $("#cnvs").mousedown((e)=>{
+        e.preventDefault();
         user.mousedown = true;
+    });
+
+    $("#cnvs").hover(e=>{;}, e=>{
+        user.mouseup = true;
     });
 
     $("#cnvs").mouseup((e)=>{
@@ -50,6 +55,8 @@ $(function(){
         // user = init_user();
         user.clicked = false;
         user.wheel = 0;
+        user.mousedown = false;
+        user.mouseup = false;
     }
 
 
