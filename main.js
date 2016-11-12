@@ -1,21 +1,21 @@
 $(function(){
 
-    var ctx = $("#cnvs")[0].getContext("2d");
+    let ctx = $("#cnvs")[0].getContext("2d");
     function init_user(){
-        var user_base = {
+        let user_base = {
             mouse : new Point(0, 0),
             clicked : false,
             wheel : 0
         }
         return user_base;
     }
-    var user = init_user();
-    var mouse = new Point(0, 0);
+    let user = init_user();
+    let mouse = new Point(0, 0);
 
-    var game = new Game(9, 4);
+    let game = new Game(9, 4);
     game.start();
 
-    var gamecanvas = new GameCanvas(game, ctx, new Point(0, 0), 1000, 800);
+    let gamecanvas = new GameCanvas(game, ctx, new Point(0, 0), 1000, 800);
 
     $("#cnvs").mousemove((e)=>{
 

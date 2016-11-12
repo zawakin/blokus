@@ -17,7 +17,7 @@ var imod = function(a, b){
     return floor(mod(a, b));
 }
 var irepel = function(i){
-    var fi = ceil(i);
+    let fi = ceil(i);
     if(fi <= 0){
         return fi - 1;
     }
@@ -36,8 +36,8 @@ class Point{
     this.y = y;
   }
   dist(p){
-    var dx = p.x - this.x;
-    var dy = p.y - this.y;
+    let dx = p.x - this.x;
+    let dy = p.y - this.y;
     return sqrt(dx*dx + dy*dy);
   }
   set(x, y){
@@ -83,8 +83,8 @@ class Point{
   }
 
   static change_ratio_triangle(ratio, ps){
-      var g = (ps[0].add(ps[1].add(ps[2]))).div(3);
-      var _ps = [];
+      let g = (ps[0].add(ps[1].add(ps[2]))).div(3);
+      let _ps = [];
       for(let p of ps){
           _ps.push(g.add(p.sub(g).multiply(ratio)));
       }

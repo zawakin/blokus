@@ -47,13 +47,13 @@ class GameCanvas extends BaseCanvas{
     constructor(game, ctx, pos, w, h){
         super(ctx, pos, w, h); //親のコンストラクタを呼ぶ
         this.game = game;
-        var board_pos = new Point(100, 50); //ボードの相対位置、幅、高さ
-        var board_w = 700;
-        var board_h = 700;
+        let board_pos = new Point(100, 50); //ボードの相対位置、幅、高さ
+        let board_w = 700;
+        let board_h = 700;
         this.boardcanvas = new BoardCanvas(this.game.board, this.ctx, board_pos, board_w, board_h);
         this.all_canvas = [];
         this.all_canvas.push(this.boardcanvas); //ここにcanvasを詰め込む
-        // var piece_pos = new Point(V)
+        // let piece_pos = new Point(V)
         // this.piececanvas = new PieceCanvas(this.game.players, this.ctx, piece_pos, piece_w, piece_h);
     }
     update(user){
@@ -89,7 +89,7 @@ class BoardCanvas extends BaseCanvas{
         super.update(user);
         if(this.contains_mouse()){
             // console.log(this.rel);
-            var _ijk = this.where_ijk();
+            let _ijk = this.where_ijk();
             // ifj
             this.ip_cursor = _ijk
             if(this.board.on_board(_ijk)){
@@ -112,15 +112,15 @@ class BoardCanvas extends BaseCanvas{
     draw(){
         this.ctx.fillStyle = "skyblue";
         this.ctx.fillRect(this.pos.x, this.pos.y, this.w, this.h);
-        var size = 20;
+        let size = 20;
         this.tri_size = size;
         this.vi = new Point(0, 1).multiply(size);
         this.vj = new Point(-sqrt(3)/2, -1/2).multiply(size);
         this.vk = new Point(+sqrt(3)/2, -1/2).multiply(size);
-        var vi = this.vi; var vj = this.vj; var vk = this.vk;
+        let vi = this.vi; let vj = this.vj; let vk = this.vk;
         //点の描画（確認用）
         for(let point of this.board.points){
-            var relp = this.vi.multiply(point[0]).add(this.vj.multiply(point[1]).add(this.vk.multiply(point[2])));
+            let relp = this.vi.multiply(point[0]).add(this.vj.multiply(point[1]).add(this.vk.multiply(point[2])));
             this.ctx.fillStyle = "black";
             this.ctx.beginPath();
             this.ctx.arc(this.abs_center.add(relp).x, this.abs_center.add(relp).y, 2, 0, 2*PI);
@@ -131,7 +131,7 @@ class BoardCanvas extends BaseCanvas{
         }
         //三角形の描画
         for(let triangle of this.board.triangles){
-            var color = this.board.blocks[triangle[0]][triangle[1]][triangle[2]];
+            let color = this.board.blocks[triangle[0]][triangle[1]][triangle[2]];
             this.draw_triangle(IPoint.from_arr(triangle), ColorInfo.forBoard[S_Color[color]]);
         }
         //カーソルは盤上にマウスが来たときのみ表示
@@ -147,14 +147,14 @@ class BoardCanvas extends BaseCanvas{
 
     draw_triangle(ip, color){
         //ボード座標系の三角形に色を付ける
-        var ps = ip.get_points_around_triangle();
-        var relps = [];
+        let ps = ip.get_points_around_triangle();
+        let relps = [];
         for(let point of ps){
-            var relp = this.vi.multiply(point.i).add(this.vj.multiply(point.j).add(this.vk.multiply(point.k)));
+            let relp = this.vi.multiply(point.i).add(this.vj.multiply(point.j).add(this.vk.multiply(point.k)));
             relps.push(relp);
         }
         relps = Point.change_ratio_triangle(0.8, relps);
-        var absps = [];
+        let absps = [];
         for(let relp of relps){
             absps.push(relp.add(this.abs_center));
         }
@@ -175,14 +175,14 @@ class BoardCanvas extends BaseCanvas{
     where_ijk(){
         //マウスの位置からボード座標系への変換
         //updateの後に呼ばれなければならない
-        var p = this.rel.sub(this.center);
-        var tri_h = this.tri_size * 3 / 2;
-        var _i = floor(p.y / tri_h);
-        var vj = new Point(-sqrt(3)/2, -1/2);
-        var vk = new Point(+sqrt(3)/2, -1/2);
-        var _j = floor(p.dot(vj) / tri_h);
-        var _k = floor(p.dot(vk) / tri_h);
-        var res = new IPoint(_i, _j, _k);
+        let p = this.rel.sub(this.center);
+        let tri_h = this.tri_size * 3 / 2;
+        let _i = floor(p.y / tri_h);
+        let vj = new Point(-sqrt(3)/2, -1/2);
+        let vk = new Point(+sqrt(3)/2, -1/2);
+        let _j = floor(p.dot(vj) / tri_h);
+        let _k = floor(p.dot(vk) / tri_h);
+        let res = new IPoint(_i, _j, _k);
         if(res.sum() == -2){
             //三角形を３本の直線が作ると考えたときには順方向の三角形は過小評価される
             //それぞれのインデックスを一ずつ足す

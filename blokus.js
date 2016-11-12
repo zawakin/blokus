@@ -15,10 +15,10 @@ var Color = {
 function swap_key_value(dict){
     //オブジェクトのkeyとvalueを入れ替える
     //例えば、Colorの数字を入れると色の文字列が返ってくるものを生成する
-    var values = Object.values(dict);
-    var keys = Object.keys(dict);
-    var res = {};
-    for(var i=0; i<keys.length; i++){
+    let values = Object.values(dict);
+    let keys = Object.keys(dict);
+    let res = {};
+    for(let i=0; i<keys.length; i++){
         res[values[i]] = keys[i];
     }
     return res;
@@ -29,11 +29,11 @@ var S_Color = swap_key_value(Color);
 
 function deepCopy(arr2d){
     //２次元配列のdeepcopy
-    var L = arr2d.length;
-    var res = [];
-    for(var i=0; i<L; i++){
-        var res2 = [];
-        for(var j=0; j<arr2d[i].length; j++){
+    let L = arr2d.length;
+    let res = [];
+    for(let i=0; i<L; i++){
+        let res2 = [];
+        for(let j=0; j<arr2d[i].length; j++){
             res2.push(arr2d[i][j]);
         }
     }
@@ -48,7 +48,7 @@ class Game{
         this.board = new Board(size, n_player);
         this.n_player = n_player;
         this.players = [];
-        for(var i=0; i < n_player; i++){
+        for(let i=0; i < n_player; i++){
             this.players.push(new Player(i+1));
         }
         this.state = State.BEFORE;
@@ -76,7 +76,7 @@ class Game{
     }
 
     wait(color){
-        var player = this.players[color];
+        let player = this.players[color];
         if(player.canput_some_piece(this.board)){
             player.put(this.board);
         }else{
@@ -112,7 +112,7 @@ class Player{
         board.put(te);
     }
     think(board){
-        var te = new Te();
+        let te = new Te();
     }
 
 }
@@ -147,10 +147,10 @@ class Board{
         //ボードをまっさらにする
         this.blocks = {};
         this.indexs = [];
-        for(var i=-this.size; i<=this.size; i++){
-            for(var j=-this.size; j<=this.size; j++){
-                for(var k=-this.size; k<=this.size; k++){
-                    var s = i + j + k;
+        for(let i=-this.size; i<=this.size; i++){
+            for(let j=-this.size; j<=this.size; j++){
+                for(let k=-this.size; k<=this.size; k++){
+                    let s = i + j + k;
                     if(i != this.size && j != this.size && k != this.size){
                         if(s == -2){
                             //順方向は自然に計算すると和が－２になるが
@@ -182,7 +182,7 @@ class Board{
 
     on_board(ip){
         //盤の上にボード座標系で表される三角形が存在するか
-        var i, j, k;
+        let i, j, k;
         if(ip.sum() == 1){
             i = ip.i - 1;
             j = ip.j - 1;
@@ -201,7 +201,7 @@ class Board{
     }
     put(te){
         //盤上に置く前にcan_putで確認せよ
-        var content = te.slided_content;
+        let content = te.slided_content;
         for(let ip of content){
             this.blocks[ip.i][ip.j][ip.k] = te.piece.color;
         }
@@ -253,20 +253,20 @@ class IPoint{
         return new IPoint(this.k, this.i, this.j);
     }
     slide_content(te){
-        var content = te.piece.content;
-        var n_pivot = te.n_pivot;
-        var res = [];
-        var one = new IPoint(content[n_pivot].sum(),  0, 0);
+        let content = te.piece.content;
+        let n_pivot = te.n_pivot;
+        let res = [];
+        let one = new IPoint(content[n_pivot].sum(),  0, 0);
         if(one.i != 1 && one.i != -1) console.log("error");
-        var offset = content[n_pivot].sub(one).add(this.sub(one));
+        let offset = content[n_pivot].sub(one).add(this.sub(one));
         for(let grid of content){
             res.push(grid.add(offset).add(one.sub(content[n_pivot])));
         }
         return res;
         // if(content[n_pivot].sum() == 1){
         // }else if(content[n_pivot].sum() == -1){
-        //     var one = new IPoint(-1, 0, 0);
-        //     var offset = content[n_pivot].sub(one).add(this.sub(one));
+        //     let one = new IPoint(-1, 0, 0);
+        //     let offset = content[n_pivot].sub(one).add(this.sub(one));
         //
         // }
     }
@@ -289,8 +289,8 @@ class IPoint{
         return this.i == ip.i && this.j == ip.j && this.k == ip.k;
     }
     get_points_around_triangle(){
-        var s = this.sum();
-        var ps = [];
+        let s = this.sum();
+        let ps = [];
         ps.push(new IPoint(this.i-s, this.j, this.k));
         ps.push(new IPoint(this.i, this.j-s, this.k));
         ps.push(new IPoint(this.i, this.j, this.k-s));
@@ -313,9 +313,9 @@ var BasePieceSet = [
     // [[0,0,1], []]
 ];
 var PieceSet = [];
-for(var i=0; i < BasePieceSet.length; i++){
-    var piece = [];
-    for(var j=0; j < BasePieceSet[i].length; j++){
+for(let i=0; i < BasePieceSet.length; i++){
+    let piece = [];
+    for(let j=0; j < BasePieceSet[i].length; j++){
         piece.push(IPoint.from_arr(BasePieceSet[i][j]));
     }
     PieceSet.push(piece);
@@ -332,17 +332,17 @@ class Piece{
 
 
     // rotate(n_times, n_pivot){
-    //     var pivot = this.content[n_pivot];
+    //     let pivot = this.content[n_pivot];
     //     if(pivot.is_forward_triangle()){
-    //         var center = new IPoint(pivot.i-1, pivot.j, pivot.k);
-    //         var offset = new IPoint(1, -1, 0);
+    //         let center = new IPoint(pivot.i-1, pivot.j, pivot.k);
+    //         let offset = new IPoint(1, -1, 0);
     //     }else if(pivot.is_backward_triangle()){
-    //         var center = new IPoint(pivot.i+1, pivot.j, pivot.k);
-    //         var offset = new IPoint(-1, 1, 0);
+    //         let center = new IPoint(pivot.i+1, pivot.j, pivot.k);
+    //         let offset = new IPoint(-1, 1, 0);
     //     }else{
     //         console.log("pivot is invalid.");
     //     }
-    //     for(var i=0; i < this.content.length; i++){
+    //     for(let i=0; i < this.content.length; i++){
     //         this.content[i] = this.content[i].sub(center).rotate(n_times)
     //                         .add(center).add(offset);
     //     }
@@ -352,42 +352,43 @@ class Piece{
     // }
 
     // rotate(n_times, n_pivot){
-    //     for(var n=0; n < n_times % 3; n++){
+    //     for(let n=0; n < n_times % 3; n++){
     //
     //     }
     // }
     rotate(n_times, n_pivot){
-        for(var n=0; n < imod(n_times, 3); n++){
+        for(let n=0; n < imod(n_times, 3); n++){
             // console.log(n_times % 3, "hoge");
-            var pivot = this.content[n_pivot];
+            let pivot = this.content[n_pivot];
+            let center, offset;
             if(pivot.is_forward_triangle()){
-                var center = new IPoint(pivot.i-1, pivot.j, pivot.k);
-                var offset = new IPoint(1, -1, 0);
+                center = new IPoint(pivot.i-1, pivot.j, pivot.k);
+                offset = new IPoint(1, -1, 0);
             }else if(pivot.is_backward_triangle()){
-                var center = new IPoint(pivot.i+1, pivot.j, pivot.k);
-                var offset = new IPoint(-1, 1, 0);
+                center = new IPoint(pivot.i+1, pivot.j, pivot.k);
+                offset = new IPoint(-1, 1, 0);
             }else{
                 console.log("pivot is invalid.");
             }
             // console.log(center);
             // console.log(offset);
 
-            for(var i=0; i < this.content.length; i++){
+            for(let i=0; i < this.content.length; i++){
                 this.content[i] = this.content[i].sub(center).rotate()
                                 .add(center).add(offset);
             }
         }
     }
     static copy_from_original_content(num){
-        var piece = [];
-        for(var i=0; i < PieceSet[num].length; i++){
+        let piece = [];
+        for(let i=0; i < PieceSet[num].length; i++){
             piece.push(PieceSet[num][i].copy());
         }
         return piece;
     }
     static copy_from_original_all(alive, color){
-        var pieces = [];
-        for(var i=0; i < PieceSet.length; i++){
+        let pieces = [];
+        for(let i=0; i < PieceSet.length; i++){
             pieces.push(new Piece(i, true, color));
         }
         return pieces;
