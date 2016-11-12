@@ -81,8 +81,8 @@ class GameCanvas extends BaseCanvas{
         this.game = game;
         this.my_color = my_color;
         let board_pos = new Point(100, 50); //ボードの相対位置、幅、高さ
-        let board_w = 700;
-        let board_h = 700;
+        let board_w = 500;
+        let board_h = 500;
 
         this.all_canvas = [];
         this.boardcanvas = new BoardCanvas(this.game.board, this.ctx, board_pos, board_w, board_h);
@@ -111,7 +111,7 @@ class GameCanvas extends BaseCanvas{
         // }
         let my_pos = this.boardcanvas.pos.add(new Point(0, this.boardcanvas.h + 10));
         let my_w = this.boardcanvas.w + 10 + komadai_w;
-        let my_h = 300;
+        let my_h = this.boardcanvas.w / 3;
         let kc = new MyKomadaiCanvas(this.game, this.my_color, this.ctx, my_pos, my_w, my_h);
         this.all_canvas.push(kc);
 
@@ -179,7 +179,7 @@ class BoardCanvas extends BaseCanvas{
     draw(){
         this.ctx.fillStyle = "skyblue";
         this.ctx.fillRect(this.pos.x, this.pos.y, this.w, this.h);
-        let size = 20;
+        let size = 20 / 700 * this.w;
         this.tri_size = size;
         this.vi = new Point(0, 1).multiply(size);
         this.vj = new Point(-sqrt(3)/2, -1/2).multiply(size);

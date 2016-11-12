@@ -5,3 +5,6 @@ main.js : アニメーションを実行するファイル<br/>
 utility.js : 便利な関数を集めたファイル<br/>
 GUI.js : GUI関連のクラスはここに集めている<br/>
 blokus.js : ゲームの構造はここ<br/>
+
+
+![sample](https://github.com/zawawahoge/blokus/blob/master/sample.png?raw=true "sample")
