@@ -1,3 +1,4 @@
+console.log("gui");
 class BaseCanvas{
     //canvasの抽象クラス
     //これを継承して具体的なクラスを作る
@@ -70,12 +71,15 @@ var ColorInfo = {
     }
 };
 
+console.log("hoge");
+
 class GameCanvas extends BaseCanvas{
     //ゲームをまとめるcanvasクラス
     //個々のcanvasを持つ
-    constructor(game, ctx, pos, w, h){
+    constructor(game, ctx, pos, w, h, my_color){
         super(ctx, pos, w, h); //親のコンストラクタを呼ぶ
         this.game = game;
+        this.my_color = my_color;
         let board_pos = new Point(100, 50); //ボードの相対位置、幅、高さ
         let board_w = 700;
         let board_h = 700;
@@ -83,8 +87,33 @@ class GameCanvas extends BaseCanvas{
         this.all_canvas = [];
         this.boardcanvas = new BoardCanvas(this.game.board, this.ctx, board_pos, board_w, board_h);
         this.all_canvas.push(this.boardcanvas); //ここにcanvasを詰め込む
-        this.testcanvas = new TestCanvas(this.ctx, new Point(300,300), 300, 300);
-        this.all_canvas.push(this.testcanvas);
+        // this.testcanvas = new TestCanvas(this.ctx, new Point(300,300), 300, 300);
+        // this.all_canvas.push(this.testcanvas);
+
+        // console.log(i);
+        console.log(this.game.n_player);
+        let sukima = 5;
+        let komadai_h = (this.boardcanvas.h - 2 * sukima) / 3;
+        let komadai_w = this.boardcanvas.w / 3;
+        for(let i=1; i<this.game.n_player; i++){
+            let color = (my_color + i - 1) % this.game.n_player + 1;
+            let x0 = this.boardcanvas.pos.x + this.boardcanvas.w + 10;
+            let y0 = this.boardcanvas.pos.y;
+            let h = komadai_h;
+            let w = komadai_w;
+            let kc = new KomadaiCanvas(this.game, color, this.ctx, new Point(x0, y0+(h+sukima)*(i-1)), w, h);
+            this.all_canvas.push(kc);
+        }
+        // for(let player of this.game.players){
+        //     if(player.color != this.my_color){
+        //
+        //     }
+        // }
+        let my_pos = this.boardcanvas.pos.add(new Point(0, this.boardcanvas.h + 10));
+        let my_w = this.boardcanvas.w + 10 + komadai_w;
+        let my_h = 300;
+        let kc = new MyKomadaiCanvas(this.game, this.my_color, this.ctx, my_pos, my_w, my_h);
+        this.all_canvas.push(kc);
 
 
         // let piece_pos = new Point(V)
@@ -236,9 +265,29 @@ class BoardCanvas extends BaseCanvas{
 
 class KomadaiCanvas extends BaseCanvas{
     //駒台のcanvasクラス
-    constructor(players, ctx, pos, w, h){
+    constructor(game, color, ctx, pos, w, h){
         super(ctx, pos, w, h);
-        this.players = player;
+        this.players = game.players;
+        this.game = game;
+        this.color = color;
+    }
+    update(user, game){
+        super.update(user);
+    }
+
+    draw(){
+        this.ctx.fillStyle = ColorInfo.forBoard[S_Color[this.color]];
+        this.ctx.fillRect(this.pos.x, this.pos.y, this.w, this.h);
+    }
+}
+
+class MyKomadaiCanvas extends KomadaiCanvas{
+    constructor(game, my_color, ctx, pos, w, h){
+        super(game, my_color, ctx, pos, w, h);
+    }
+    draw(){
+        this.ctx.fillStyle = ColorInfo.forBoard[S_Color[this.color]];
+        this.ctx.fillRect(this.pos.x, this.pos.y, this.w, this.h);
     }
 }
 

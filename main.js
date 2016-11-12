@@ -18,7 +18,8 @@ $(function(){
     let game = new Game(9, 4);
     game.start();
 
-    let gamecanvas = new GameCanvas(game, ctx, new Point(0, 0), 1000, 800);
+    let my_color = Color.BLUE;
+    let gamecanvas = new GameCanvas(game, ctx, new Point(0, 0), 1200, 1000, my_color);
 
     $("")
     $("#cnvs").mousemove((e)=>{

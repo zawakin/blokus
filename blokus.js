@@ -108,6 +108,9 @@ class Player{
         //可能な手を列挙する
         return true;
     }
+    is_me(color){
+        return this.color == color;
+    }
     put(te,board){
         board.put(te);
     }
@@ -320,7 +323,6 @@ for(let i=0; i < BasePieceSet.length; i++){
     }
     PieceSet.push(piece);
 }
-
 
 class Piece{
     constructor(num, alive, color){
