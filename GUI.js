@@ -9,6 +9,7 @@ class BaseCanvas{
         this.h = h;
         this.draggable = true;
         this.dragging = false;
+        this.dropped = false;
     }
     update(user){
         this.user = user;
@@ -38,10 +39,13 @@ class BaseCanvas{
                     this.rel_before = this.rel.copy();
                     return true;
                 }else{
-                    this.dragging = false;
+                    // this.dragging = false;
                 }
             }else if(this.user.mouseup){
-                console.log("mouseup");
+                // console.log("mouseup");
+                if(this.dragging){
+                    this.dropped = true;
+                }
                 this.dragging = false;
             }else{
                 if(this.dragging){
@@ -130,7 +134,11 @@ class GameCanvas extends BaseCanvas{
         for(let i=this.all_canvas.length-1; i>=0; i--){
             let canvas = this.all_canvas[i];
             if(canvas.drag()) break;
+            if(canvas.dropped){
+                this.drop(canvas);
+            }
         }
+
     }
     draw(){
         this.ctx.clearRect(this.pos.x, this.pos.y, this.w, this.h);
@@ -139,6 +147,17 @@ class GameCanvas extends BaseCanvas{
         for(let canvas of this.all_canvas){
             canvas.draw();
         }
+    }
+    drop(canvas){
+        let dx = 0;
+        let dy = 0;
+        if(canvas.pos.x < this.pos.x) dx = this.pos.x - canvas.pos.x;
+        if(canvas.pos.y < this.pos.y) dy = this.pos.y - canvas.pos.y;
+        if(canvas.pos.x + canvas.w > this.pos.x + this.w) dx = this.pos.x + this.w - (canvas.pos.x + canvas.w);
+        if(canvas.pos.y + canvas.h > this.pos.y + this.h) dy = this.pos.y + this.h - (canvas.pos.y + canvas.h);
+        canvas.pos = canvas.pos.add(new Point(dx, dy));
+        canvas.dropped = false;
+
     }
 
 }
