@@ -65,19 +65,21 @@ class BaseCanvas{
 
 
 var ColorInfo = {
+    gameboard : "rgba(175, 134, 134, 1)",
+    boardcanvas : "#a5adb4",
     forBoard : {
-        NONE : "gray",
+        NONE : "rgb(130, 135, 130)",
         BLUE : "rgba(0,0,255,0.9)",
         RED : "rgba(255,0,0,0.9)",
         GREEN : "rgba(0,255,0,0.0.9)",
-        YELLOW : "rgba(255,255,0,0. 5)"
+        YELLOW : "rgba(250, 250, 14, 1)"
     },
     forKomadai : {
         NONE : "gray",
-        BLUE : "rgba(0,0,255,0.8)",
-        RED : "rgba(255,0,0,0.8)",
-        GREEN : "rgba(0,255,0,0.8)",
-        YELLOW : "rgba(255,255,0,0.8)"
+        BLUE : "rgba(111, 111, 241, 0.8)",
+        RED : "rgba(241, 105, 105, 0.8)",
+        GREEN : "rgba(94, 241, 94, 0.8)",
+        YELLOW : "rgba(246, 246, 105, 0.8)"
 
     }
 };
@@ -92,16 +94,13 @@ class GameCanvas extends BaseCanvas{
         this.game = game;
         this.my_color = my_color;
         let board_pos = new Point(100, 50); //ボードの相対位置、幅、高さ
-        let board_w = 500;
-        let board_h = 500;
+        let board_w = 600;
+        let board_h = 600;
 
         this.all_canvas = [];
         this.boardcanvas = new BoardCanvas(this.game.board, this.ctx, board_pos, board_w, board_h);
         this.all_canvas.push(this.boardcanvas); //ここにcanvasを詰め込む
-        // this.testcanvas = new TestCanvas(this.ctx, new Point(300,300), 300, 300);
-        // this.all_canvas.push(this.testcanvas);
 
-        // console.log(i);
         console.log(this.game.n_player);
         let sukima = 5 / 500 * this.boardcanvas.w;
         let komadai_h = (this.boardcanvas.h - 2 * sukima) / 3;
@@ -115,11 +114,6 @@ class GameCanvas extends BaseCanvas{
             let kc = new KomadaiCanvas(this.game, color, this.ctx, new Point(x0, y0+(h+sukima)*(i-1)), w, h);
             this.all_canvas.push(kc);
         }
-        // for(let player of this.game.players){
-        //     if(player.color != this.my_color){
-        //
-        //     }
-        // }
         let my_pos = this.boardcanvas.pos.add(new Point(0, this.boardcanvas.h + 10));
         let my_w = this.boardcanvas.w + 10 + komadai_w;
         let my_h = this.boardcanvas.w / 3;
@@ -149,7 +143,7 @@ class GameCanvas extends BaseCanvas{
     }
     draw(){
         this.ctx.clearRect(this.pos.x, this.pos.y, this.w, this.h);
-        this.ctx.fillStyle = "rgba(220,220,220,1)";
+        this.ctx.fillStyle = ColorInfo.gameboard;
         this.ctx.fillRect(this.pos.x, this.pos.y, this.w, this.h);
         this.ctx.lineWidth = 5.0;
         this.ctx.strokeRect(this.pos.x, this.pos.y, this.w, this.h);
@@ -190,6 +184,8 @@ class BoardCanvas extends BaseCanvas{
             if(this.board.on_board(_ijk)){
                 this.te = new Te(_ijk, new Piece(0, true, Color.YELLOW), this._rot, 1);
                 this.selected = true;
+            }else{
+                // this.selected = false;
             }
             if(this.board.on_board(_ijk) && user.wheel != 0){
                 this._rot += user.wheel;
@@ -205,22 +201,23 @@ class BoardCanvas extends BaseCanvas{
         }
     }
     draw(){
-        this.ctx.fillStyle = "skyblue";
+        this.ctx.fillStyle = ColorInfo.boardcanvas;
         this.ctx.fillRect(this.pos.x, this.pos.y, this.w, this.h);
         this.ctx.lineWidth = 5.0;
         this.ctx.strokeRect(this.pos.x, this.pos.y, this.w, this.h);
-        let size = 20 / 700 * this.w;
+        let size = 21 / 700 * this.w;
         this.tri_size = size;
         this.vi = new Point(0, 1).multiply(size);
         this.vj = new Point(-sqrt(3)/2, -1/2).multiply(size);
         this.vk = new Point(+sqrt(3)/2, -1/2).multiply(size);
         let vi = this.vi; let vj = this.vj; let vk = this.vk;
-        //点の描画（確認用）
+        // 点の描画（確認用）
         for(let point of this.board.points){
             let relp = this.vi.multiply(point[0]).add(this.vj.multiply(point[1]).add(this.vk.multiply(point[2])));
             this.ctx.fillStyle = "black";
+
             this.ctx.beginPath();
-            this.ctx.arc(this.abs_center.add(relp).x, this.abs_center.add(relp).y, 2, 0, 2*PI);
+            // this.ctx.arc(this.abs_center.add(relp).x, this.abs_center.add(relp).y, 2, 0, 2*PI);
             if(point[0] == 0 && point[1] == 0 && point[2] == 0){
                 this.ctx.arc(this.abs_center.add(relp).x, this.abs_center.add(relp).y, 4, 0, 2*PI);
             }
@@ -229,20 +226,20 @@ class BoardCanvas extends BaseCanvas{
         //三角形の描画
         for(let triangle of this.board.triangles){
             let color = this.board.blocks[triangle[0]][triangle[1]][triangle[2]];
-            this.draw_triangle(IPoint.from_arr(triangle), ColorInfo.forBoard[S_Color[color]]);
+            this.draw_triangle(IPoint.from_arr(triangle), ColorInfo.forBoard[S_Color[color]], color!=Color.NONE);
         }
-        //カーソルは盤上にマウスが来たときのみ表示
+        // カー,ソルは盤上にマウスが来たときのみ表示
         if(this.board.on_board(this.ip_cursor)){
             this.draw_triangle(this.ip_cursor, "red");
         }
         if(this.selected && this.board.can_put(this.te)){
             for(let ip of this.te.slided_content){
-                this.draw_triangle(ip, "blue");
+                this.draw_triangle(ip, "blue", true);
             }
         }
     }
 
-    draw_triangle(ip, color){
+    draw_triangle(ip, color, larger){
         //ボード座標系の三角形に色を付ける
         let ps = ip.get_points_around_triangle();
         let relps = [];
@@ -250,7 +247,9 @@ class BoardCanvas extends BaseCanvas{
             let relp = this.vi.multiply(point.i).add(this.vj.multiply(point.j).add(this.vk.multiply(point.k)));
             relps.push(relp);
         }
-        relps = Point.change_ratio_triangle(0.8, relps);
+        let alpha = 0.8;
+        if(larger) alpha = 0.9;
+        relps = Point.change_ratio_triangle(alpha, relps);
         let absps = [];
         for(let relp of relps){
             absps.push(relp.add(this.abs_center));
@@ -262,7 +261,8 @@ class BoardCanvas extends BaseCanvas{
         this.ctx.moveTo(absps[0].x, absps[0].y);
         this.ctx.lineTo(absps[1].x, absps[1].y);
         this.ctx.lineTo(absps[2].x, absps[2].y);
-        this.ctx.closePath();
+        this.ctx.lineTo(absps[0].x, absps[0].y);
+        // this.ctx.closePath();
         this.ctx.fill();
 
     }
@@ -311,14 +311,6 @@ class KomadaiCanvas extends BaseCanvas{
         this.ctx.fillStyle = "black"
         this.ctx.lineWidth = 3;
         this.ctx.strokeRect(this.pos.x, this.pos.y, this.w, this.h);
-        // this.ctx.beginPath();
-        // this.ctx.moveTo(this.pos.x, this.pos.y);
-        // this.ctx.lineTo(this.pos.x+this.w, this.pos.y);
-        // this.ctx.lineTo(this.pos.x+this.w, this.pos.y+this.h);
-        // this.ctx.lineTo(this.pos.x, this.pos.y+this.h);
-        // this.ctx.lineTo(this.pos.x, this.pos.y);
-        // this.ctx.stroke();
-        this.ctx.lineWidth = 1.0;
     }
 }
 

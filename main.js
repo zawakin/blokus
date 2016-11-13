@@ -47,6 +47,7 @@ $(function(){
     });
 
     $("#cnvs").mousewheel((eo, delta, deltaX, deltaY)=>{
+        eo.preventDefault();
         user.wheel = delta;
         console.log(delta, deltaX, deltaY);
     });
@@ -60,7 +61,7 @@ $(function(){
         user.mouseup = false;
     }
 
-
+    console.log(game.board.triangles);
 
     setInterval(render, 10);
 });
