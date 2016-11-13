@@ -104,6 +104,13 @@ class Player{
     initialize(n_player){
         this.pieces = Piece.copy_from_original_all();
     }
+    get pieces_alive(){
+        let res = [];
+        for(let piece of this.pieces){
+            if(piece.alive) res.push(piece);
+        }
+        return res;
+    }
     canput_some_piece_on(board){
         //可能な手を列挙する
         return true;

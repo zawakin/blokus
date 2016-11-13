@@ -55,6 +55,9 @@ class BaseCanvas{
         }
         return false;
     }
+    drop(){
+        //dropしたあとはdroppedをfalseにする
+    }
 
     contains_mouse(){
         //このcanvasの中にマウスカーソルがあるか
@@ -84,7 +87,6 @@ var ColorInfo = {
     }
 };
 
-console.log("hoge");
 
 class GameCanvas extends BaseCanvas{
     //ゲームをまとめるcanvasクラス
@@ -105,14 +107,28 @@ class GameCanvas extends BaseCanvas{
         let sukima = 5 / 500 * this.boardcanvas.w;
         let komadai_h = (this.boardcanvas.h - 2 * sukima) / 3;
         let komadai_w = this.boardcanvas.w / 3;
+        let piece_h = komadai_h / 5;
+        let piece_w = komadai_w / 5
         for(let i=1; i<this.game.n_player; i++){
             let color = (my_color + i - 1) % this.game.n_player + 1;
+            let player = this.game.players[color - 1];
             let x0 = this.boardcanvas.pos.x + this.boardcanvas.w + 10;
             let y0 = this.boardcanvas.pos.y;
             let h = komadai_h;
             let w = komadai_w;
-            let kc = new KomadaiCanvas(this.game, color, this.ctx, new Point(x0, y0+(h+sukima)*(i-1)), w, h);
+            let pos = new Point(x0, y0+(h+sukima)*(i-1));
+            let kc = new KomadaiCanvas(this.game, color, this.ctx, pos, w, h);
             this.all_canvas.push(kc);
+            for(let j=0; j<player.pieces_alive.length; j++){
+                let base = new Point(sukima, sukima);
+                let offset = new Point(piece_h+sukima, 0);
+                let piece = player.pieces_alive[j];
+                let pc = new PieceCanvas(piece, 0, this.ctx, pos.add(offset.multiply(j)).add(base),
+                                        piece_w, piece_h);
+                this.all_canvas.push(pc);
+            }
+
+
         }
         let my_pos = this.boardcanvas.pos.add(new Point(0, this.boardcanvas.h + 10));
         let my_w = this.boardcanvas.w + 10 + komadai_w;
@@ -120,9 +136,6 @@ class GameCanvas extends BaseCanvas{
         let kc = new MyKomadaiCanvas(this.game, this.my_color, this.ctx, my_pos, my_w, my_h);
         this.all_canvas.push(kc);
 
-
-        // let piece_pos = new Point(V)
-        // this.piececanvas = new PieceCanvas(this.game.players, this.ctx, piece_pos, piece_w, piece_h);
     }
     update(user){
         //drawする前にユーザーの操作を処理するための関数
@@ -327,17 +340,22 @@ class MyKomadaiCanvas extends KomadaiCanvas{
 }
 
 class PieceCanvas extends BaseCanvas{
-    constructor(piece, nrot_30, ctx, pos, w, h){
+    constructor(piece, n_rot30, ctx, pos, w, h){
         super(ctx, pos, w, h);
         this.piece = piece;
-        this.nrot_30 = nrot_30;
+        this.n_rot30 = n_rot30;
+        this.draggable = true;
     }
     update(user){
         super.update(user);
     }
-    contains_mouse(){
-
+    draw(){
+        this.ctx.fillStyle = "pink";
+        this.ctx.fillRect(this.pos.x, this.pos.y, this.w, this.h);
     }
+    // contains_mouse(){
+    //
+    // }
 
 }
 

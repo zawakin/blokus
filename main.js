@@ -49,7 +49,7 @@ $(function(){
     $("#cnvs").mousewheel((eo, delta, deltaX, deltaY)=>{
         eo.preventDefault();
         user.wheel = delta;
-        console.log(delta, deltaX, deltaY);
+        // console.log(delta, deltaX, deltaY);
     });
     function render(){
         gamecanvas.update(user);
