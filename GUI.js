@@ -50,10 +50,14 @@ class BaseCanvas{
                 if(this.dragging){
                     this.pos = this.pos.add(this.rel.sub(this.rel_before));
                     this.update(this.user);
+                    this.drag_update(this.user);
                 }
             }
         }
         return false;
+    }
+    drag_update(user){
+
     }
     drop(){
         //dropしたあとはdroppedをfalseにする
@@ -74,14 +78,14 @@ var ColorInfo = {
         NONE : "rgb(130, 135, 130)",
         BLUE : "rgba(0,0,255,0.9)",
         RED : "rgba(255,0,0,0.9)",
-        GREEN : "rgba(0,255,0,0.0.9)",
+        GREEN : "rgba(0, 255, 0, 0.96)",
         YELLOW : "rgba(250, 250, 14, 1)"
     },
     forKomadai : {
         NONE : "gray",
         BLUE : "rgba(111, 111, 241, 0.8)",
         RED : "rgba(241, 105, 105, 0.8)",
-        GREEN : "rgba(94, 241, 94, 0.8)",
+        GREEN : "rgba(129, 237, 129, 0.8)",
         YELLOW : "rgba(246, 246, 105, 0.8)"
 
     }
@@ -125,6 +129,7 @@ class GameCanvas extends BaseCanvas{
                 let piece = player.pieces_alive[j];
                 let pc = new PieceCanvas(piece, 0, this.ctx, pos.add(offset.multiply(j)).add(base),
                                         piece_w, piece_h);
+                kc.piececanvases.push(pc);
                 this.all_canvas.push(pc);
             }
 
@@ -135,6 +140,16 @@ class GameCanvas extends BaseCanvas{
         let my_h = this.boardcanvas.w / 3;
         let kc = new MyKomadaiCanvas(this.game, this.my_color, this.ctx, my_pos, my_w, my_h);
         this.all_canvas.push(kc);
+        for(let j=0; j<this.game.players[my_color-1].pieces_alive.length; j++){
+            let base = new Point(sukima, sukima);
+            let offset = new Point(piece_h+sukima, 0);
+            let piece = this.game.players[my_color-1].pieces_alive[j];
+            let pc = new PieceCanvas(piece, 0, this.ctx, my_pos.add(offset.multiply(j)).add(base),
+                                    my_w / 5, my_h / 5);
+            kc.piececanvases.push(pc);
+            this.all_canvas.push(pc);
+        }
+
 
     }
     update(user){
@@ -167,10 +182,10 @@ class GameCanvas extends BaseCanvas{
     drop(canvas){
         let dx = 0;
         let dy = 0;
-        if(canvas.pos.x < this.pos.x) dx = this.pos.x - canvas.pos.x;
-        if(canvas.pos.y < this.pos.y) dy = this.pos.y - canvas.pos.y;
-        if(canvas.pos.x + canvas.w > this.pos.x + this.w) dx = this.pos.x + this.w - (canvas.pos.x + canvas.w);
-        if(canvas.pos.y + canvas.h > this.pos.y + this.h) dy = this.pos.y + this.h - (canvas.pos.y + canvas.h);
+        if(canvas.pos.x < this.pos.x) dx = this.pos.x - canvas.pos.x + 3;
+        if(canvas.pos.y < this.pos.y) dy = this.pos.y - canvas.pos.y + 3;
+        if(canvas.pos.x + canvas.w > this.pos.x + this.w) dx = this.pos.x + this.w - (canvas.pos.x + canvas.w) - 3;
+        if(canvas.pos.y + canvas.h > this.pos.y + this.h) dy = this.pos.y + this.h - (canvas.pos.y + canvas.h) - 3;
         canvas.pos = canvas.pos.add(new Point(dx, dy));
         canvas.dropped = false;
 
@@ -313,9 +328,15 @@ class KomadaiCanvas extends BaseCanvas{
         this.players = game.players;
         this.game = game;
         this.color = color;
+        this.piececanvases = [];
+        this.pos_before = pos.copy();
     }
     update(user, game){
         super.update(user);
+        for(let pc of this.piececanvases){
+            pc.pos = pc.pos.add(this.pos.sub(this.pos_before));
+        }
+        this.pos_before = this.pos.copy();
     }
 
     draw(){
@@ -349,8 +370,15 @@ class PieceCanvas extends BaseCanvas{
     update(user){
         super.update(user);
     }
+    drag_update(user){
+        if(this.dragging && user.wheel != 0){
+            this.n_rot30 += user.wheel;
+            console.log("wheel" + " "+ this.n_rot30);
+        }
+    }
     draw(){
-        this.ctx.fillStyle = "pink";
+        let s_color = ColorInfo.forBoard[S_Color[this.piece.color]];
+        this.ctx.fillStyle = s_color;
         this.ctx.fillRect(this.pos.x, this.pos.y, this.w, this.h);
     }
     // contains_mouse(){

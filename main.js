@@ -61,7 +61,5 @@ $(function(){
         user.mouseup = false;
     }
 
-    console.log(game.board.triangles);
-
     setInterval(render, 10);
 });
