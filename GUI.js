@@ -110,9 +110,9 @@ class GameCanvas extends BaseCanvas{
         console.log(this.game.n_player);
         let sukima = 5 / 500 * this.boardcanvas.w;
         let komadai_h = (this.boardcanvas.h - 2 * sukima) / 3;
-        let komadai_w = this.boardcanvas.w / 3;
+        let komadai_w = this.boardcanvas.w / 2;
         let piece_h = komadai_h / 5;
-        let piece_w = komadai_w / 5
+        let piece_w = komadai_w / 5 * 2 /3;
         let piece_size = 21 / 700 * board_w;
         for(let i=1; i<this.game.n_player; i++){
             let color = (my_color + i - 1) % this.game.n_player + 1;
@@ -125,11 +125,16 @@ class GameCanvas extends BaseCanvas{
             let kc = new KomadaiCanvas(this.game, color, this.ctx, pos, w, h);
             this.all_canvas.push(kc);
             for(let j=0; j<player.pieces_alive.length; j++){
-                let base = new Point(sukima, sukima);
+                // let base = new Point(sukima, sukima);
                 let offset = new Point(piece_w+sukima, 0);
                 let piece = player.pieces_alive[j];
-                let pc = new PieceCanvas(piece, 0, this.ctx, pos.add(offset.multiply(j)).add(base),
-                                        piece_w, piece_h, piece_size);
+                // let offset = new Point(100, 0);
+                let nw = floor(w / offset.x);
+                let ni = imod(j, nw);
+                let nj = floor(j / nw);
+                let offset2 = new Point(offset.x*ni, piece_w*nj);
+                let pc = new PieceCanvas(piece, 0, this.ctx, pos.add(offset2),
+                                        piece_w, piece_h, piece_size/3);
                 kc.piececanvases.push(pc);
                 this.all_canvas.push(pc);
             }
@@ -142,10 +147,14 @@ class GameCanvas extends BaseCanvas{
         let kc = new MyKomadaiCanvas(this.game, this.my_color, this.ctx, my_pos, my_w, my_h);
         this.all_canvas.push(kc);
         for(let j=0; j<this.game.players[my_color-1].pieces_alive.length; j++){
-            let base = new Point(sukima, sukima);
-            let offset = new Point(piece_w+sukima, 0);
+            let base = new Point(sukima, sukima*3);
+            let offset = new Point(piece_w*2+sukima, 0);
+            let nw = floor(my_w / offset.x);
+            let ni = imod(j, nw);
+            let nj = floor(j / nw);
+            let offset2 = new Point(offset.x*ni, piece_h*2*nj);
             let piece = this.game.players[my_color-1].pieces_alive[j];
-            let pc = new PieceCanvas(piece, 0, this.ctx, my_pos.add(offset.multiply(j)).add(base),
+            let pc = new PieceCanvas(piece, 0, this.ctx, my_pos.add(offset2).add(base),
                                     my_w / 10, my_h / 5, piece_size);
             kc.piececanvases.push(pc);
             this.all_canvas.push(pc);
