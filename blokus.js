@@ -358,7 +358,7 @@ class Piece{
     constructor(num, alive, color){
         this.alive = alive;
         this.num = num;
-        this.content = Piece.copy_from_original_content(this.num);
+        this.content = Piece.copy_from_original_content(this.num); //IPointのセット
         this.color = color;
     }
 
@@ -410,6 +410,14 @@ class Piece{
                                 .add(center).add(offset);
             }
         }
+    }
+    get_n_pivot(ip){
+        for(let n=0; n<this.content.length; n++){
+            if(ip.equals(this.content[n])){
+                return n;
+            }
+        }
+        console.log("[error] n_pivot not found.");
     }
     static copy_from_original_content(num){
         let piece = [];

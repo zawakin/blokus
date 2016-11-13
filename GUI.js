@@ -68,6 +68,23 @@ class BaseCanvas{
         return 0 <= this.rel.x && this.rel.x <= this.w
                     && 0 <= this.rel.y && this.rel.y <= this.h
     }
+    where_ijk(tri_size){
+            let p = this.rel.sub(this.center);
+            let tri_h = tri_size * 3 / 2;
+            let _i = floor(p.y / tri_h);
+            let vj = new Point(-sqrt(3)/2, -1/2);
+            let vk = new Point(+sqrt(3)/2, -1/2);
+            let _j = floor(p.dot(vj) / tri_h);
+            let _k = floor(p.dot(vk) / tri_h);
+            let res = new IPoint(_i, _j, _k);
+            if(res.sum() == -2){
+                //三角形を３本の直線が作ると考えたときには順方向の三角形は過小評価される
+                //それぞれのインデックスを一ずつ足す
+                res = res.add(IPoint.One());
+            }
+            console.log(res);
+            return res;
+    }
 }
 
 
@@ -146,6 +163,7 @@ class GameCanvas extends BaseCanvas{
         let my_h = this.boardcanvas.w / 3;
         let kc = new MyKomadaiCanvas(this.game, this.my_color, this.ctx, my_pos, my_w, my_h);
         this.all_canvas.push(kc);
+        this.mykomadaicanvas = kc;
         for(let j=0; j<this.game.players[my_color-1].pieces_alive.length; j++){
             let base = new Point(sukima, sukima*3);
             let offset = new Point(piece_w*2+sukima, 0);
@@ -170,12 +188,18 @@ class GameCanvas extends BaseCanvas{
         for(let canvas of this.all_canvas){
             canvas.update(user);
         }
+
         for(let i=this.all_canvas.length-1; i>=0; i--){
             let canvas = this.all_canvas[i];
             if(canvas.drag()) break;
             if(canvas.dropped){
                 this.drop(canvas);
             }
+        }
+
+        // this.mykomadaicanvas
+        for(let piece of this.mykomadaicanvas.piececanvases){
+            piece.tri_size = this.boardcanvas.tri_size;
         }
 
     }
@@ -237,14 +261,15 @@ class BoardCanvas extends BaseCanvas{
         }else{
             this.ip_cursor = new IPoint(-1000, -1000, -1000);
         }
+        let size = 21 / 700 * this.w;
+        this.tri_size = size;
     }
     draw(){
+        let size = this.tri_size;
         this.ctx.fillStyle = ColorInfo.boardcanvas;
         this.ctx.fillRect(this.pos.x, this.pos.y, this.w, this.h);
         this.ctx.lineWidth = 5.0;
         this.ctx.strokeRect(this.pos.x, this.pos.y, this.w, this.h);
-        let size = 21 / 700 * this.w;
-        this.tri_size = size;
         this.vi = new Point(0, 1).multiply(size);
         this.vj = new Point(-sqrt(3)/2, -1/2).multiply(size);
         this.vk = new Point(+sqrt(3)/2, -1/2).multiply(size);
@@ -329,6 +354,7 @@ class BoardCanvas extends BaseCanvas{
 
     }
 
+
 }
 
 class KomadaiCanvas extends BaseCanvas{
@@ -384,7 +410,9 @@ class PieceCanvas extends BaseCanvas{
     drag_update(user){
         if(this.dragging && user.wheel != 0){
             this.n_rot30 += user.wheel;
-            console.log("wheel" + " "+ this.n_rot30);
+            let ip = this.piece.get_n_pivot(this.where_ijk(this.tri_size));
+            this.piece.rotate(this.n_rot30, ip);
+            // console.log("wheel" + " "+ this.n_rot30);
         }
     }
     draw(){
@@ -422,9 +450,10 @@ class PieceCanvas extends BaseCanvas{
             this.ctx.fill();
         }
     }
-    // contains_mouse(){
-    //
-    // }
+    contains_mouse(){
+        return super.contains_mouse();
+
+    }
 
 }
 
