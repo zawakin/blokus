@@ -113,6 +113,7 @@ class GameCanvas extends BaseCanvas{
         let komadai_w = this.boardcanvas.w / 3;
         let piece_h = komadai_h / 5;
         let piece_w = komadai_w / 5
+        let piece_size = 21 / 700 * board_w;
         for(let i=1; i<this.game.n_player; i++){
             let color = (my_color + i - 1) % this.game.n_player + 1;
             let player = this.game.players[color - 1];
@@ -125,10 +126,10 @@ class GameCanvas extends BaseCanvas{
             this.all_canvas.push(kc);
             for(let j=0; j<player.pieces_alive.length; j++){
                 let base = new Point(sukima, sukima);
-                let offset = new Point(piece_h+sukima, 0);
+                let offset = new Point(piece_w+sukima, 0);
                 let piece = player.pieces_alive[j];
                 let pc = new PieceCanvas(piece, 0, this.ctx, pos.add(offset.multiply(j)).add(base),
-                                        piece_w, piece_h);
+                                        piece_w, piece_h, piece_size);
                 kc.piececanvases.push(pc);
                 this.all_canvas.push(pc);
             }
@@ -142,10 +143,10 @@ class GameCanvas extends BaseCanvas{
         this.all_canvas.push(kc);
         for(let j=0; j<this.game.players[my_color-1].pieces_alive.length; j++){
             let base = new Point(sukima, sukima);
-            let offset = new Point(piece_h+sukima, 0);
+            let offset = new Point(piece_w+sukima, 0);
             let piece = this.game.players[my_color-1].pieces_alive[j];
             let pc = new PieceCanvas(piece, 0, this.ctx, my_pos.add(offset.multiply(j)).add(base),
-                                    my_w / 5, my_h / 5);
+                                    my_w / 10, my_h / 5, piece_size);
             kc.piececanvases.push(pc);
             this.all_canvas.push(pc);
         }
@@ -361,11 +362,12 @@ class MyKomadaiCanvas extends KomadaiCanvas{
 }
 
 class PieceCanvas extends BaseCanvas{
-    constructor(piece, n_rot30, ctx, pos, w, h){
+    constructor(piece, n_rot30, ctx, pos, w, h, size){
         super(ctx, pos, w, h);
         this.piece = piece;
         this.n_rot30 = n_rot30;
         this.draggable = true;
+        this.size = size;
     }
     update(user){
         super.update(user);
@@ -379,7 +381,37 @@ class PieceCanvas extends BaseCanvas{
     draw(){
         let s_color = ColorInfo.forBoard[S_Color[this.piece.color]];
         this.ctx.fillStyle = s_color;
-        this.ctx.fillRect(this.pos.x, this.pos.y, this.w, this.h);
+        // this.ctx.fillRect(this.pos.x, this.pos.y, this.w, this.h);
+        let size = this.size;
+        let larger = true;
+        this.vi = new Point(0, 1).multiply(size);
+        this.vj = new Point(-sqrt(3)/2, -1/2).multiply(size);
+        this.vk = new Point(+sqrt(3)/2, -1/2).multiply(size);
+
+        for(let triangle of this.piece.content){
+            let ip = triangle;
+            let ps = ip.get_points_around_triangle();
+            let relps = [];
+            for(let point of ps){
+                let relp = this.vi.multiply(point.i).add(this.vj.multiply(point.j).add(this.vk.multiply(point.k)));
+                relps.push(relp);
+            }
+
+            let alpha = 0.8;
+            if(larger) alpha = 0.9;
+            relps = Point.change_ratio_triangle(alpha, relps);
+            let absps = [];
+            for(let relp of relps){
+                absps.push(relp.add(this.abs_center));
+            }
+            this.ctx.beginPath();
+            this.ctx.moveTo(absps[0].x, absps[0].y);
+            this.ctx.lineTo(absps[1].x, absps[1].y);
+            this.ctx.lineTo(absps[2].x, absps[2].y);
+            this.ctx.lineTo(absps[0].x, absps[0].y);
+            // this.ctx.closePath();
+            this.ctx.fill();
+        }
     }
     // contains_mouse(){
     //
