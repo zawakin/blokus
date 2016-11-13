@@ -102,7 +102,7 @@ class Player{
         this.color = color;
     }
     initialize(n_player){
-        this.pieces = Piece.copy_from_original_all();
+        this.pieces = Piece.copy_from_original_all(true, this.color);
     }
     get pieces_alive(){
         let res = [];
