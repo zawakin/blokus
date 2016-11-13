@@ -411,7 +411,7 @@ class PieceCanvas extends BaseCanvas{
         if(this.dragging && user.wheel != 0){
             this.n_rot30 += user.wheel;
             let ip = this.piece.get_n_pivot(this.where_ijk(this.tri_size));
-            this.piece.rotate(this.n_rot30, ip);
+            this.piece.rotate(user.wheel, ip);
             // console.log("wheel" + " "+ this.n_rot30);
         }
     }
