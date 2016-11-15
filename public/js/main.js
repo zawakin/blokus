@@ -1,9 +1,22 @@
 $(function(){
 
-    $.get("/cookie", (res)=>{
-        console.log(res);
+    let socket = io();
+
+    let roomNum;
+    $.ajax({
+        type : "GET",
+        url : "/cookie",
+        dataType : "text",
+        async : false,
+        success : (res)=>{
+            console.log(`getting roomNum successfully. r=${res}`);
+            roomNum = Number.parseInt(res);
+        }
     });
-    console.log("hello");
+
+    socket.emit("whereroom", roomNum);
+
+    console.log("hello " + roomNum);
     const ctx = $("#cnvs")[0].getContext("2d");
     function init_user(){
         let user_base = {

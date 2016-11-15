@@ -50,6 +50,11 @@ io.on("connection", (socket)=>{
         console.log("givemerooms received.");
 		mng.SendRoomState(socket);
 	});
+    socket.on("whereroom", roomNum=>{
+        socket.page = PAGE.BATTLE;
+        socket.roomNum = roomNum;
+        console.log(socket.roomNum);
+    });
 });
 var ROOMSTATE = {
     EMPTY : 0,
