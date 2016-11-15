@@ -1,0 +1,23 @@
+{
+  "name": "blokus",
+  "version": "1.0.0",
+  "description": "通信対戦ができるblokusを作成中。<br/>\r main.js : アニメーションを実行するファイル<br/>\r utility.js : 便利な関数を集めたファイル<br/>\r GUI.js : GUI関連のクラスはここに集めている<br/>\r blokus.js : ゲームの構造はここ<br/>",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zawawahoge/blokus.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zawawahoge/blokus/issues"
+  },
+  "homepage": "https://github.com/zawawahoge/blokus#readme",
+  "dependencies": {
+    "express": "^4.14.0",
+    "socket.io": "^1.5.1"
+  }
+}

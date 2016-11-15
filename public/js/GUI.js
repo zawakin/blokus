@@ -295,11 +295,11 @@ class BoardCanvas extends BaseCanvas{
         if(this.board.on_board(this.ip_cursor)){
             this.draw_triangle(this.ip_cursor, "red");
         }
-        if(this.selected && this.board.can_put(this.te)){
-            for(let ip of this.te.slided_content){
-                this.draw_triangle(ip, "blue", true);
-            }
-        }
+        // if(this.selected && this.board.can_put(this.te)){
+        //     for(let ip of this.te.slided_content){
+        //         this.draw_triangle(ip, "blue", true);
+        //     }
+        // }
     }
 
     draw_triangle(ip, color, larger){
