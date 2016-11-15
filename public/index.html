@@ -1,23 +1,29 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <title>Blokus trigon</title>
-        <style src="./style.css"></style>
-        <script type="text/javascript" src="./jquery-3.1.1.min.js"></script>
-        <script type="text/javascript" src="./jquery.mousewheel.min.js"></script>
-        <script type="text/javascript" src="./utility.js"></script>
-        <script type="text/javascript" src="./blokus.js"></script>
-        <script type="text/javascript" src="./GUI.js"></script>
-        <script type="text/javascript" src="./main.js"></script>
 
-    </head>
-    <body>
-        <div id="debugbox">
-            <h2 id="debug" >hoge</h2>
-        </div>
-        <canvas id="cnvs" width="1200" height="1000"
-        style="background-color:white; left:0px; top:0px; " class="unselectable"></canvas>
-        <br />
-    </body>
+<html lang="ja" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>blokus</title>
+
+    <style>
+        li {
+            font-size:20px;
+            margin:10px;
+        }
+	</style>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="js/indexpage.js"></script>
+</head>
+<body>
+    <h1>blokusができるサイト</h1>
+
+	<article>
+	    <ul id="roomList" class="list-group">
+	    </ul>
+	</article>
+
+
+</body>
 </html>

@@ -1,5 +1,9 @@
 $(function(){
 
+    $.get("/cookie", (res)=>{
+        console.log(res);
+    });
+    console.log("hello");
     const ctx = $("#cnvs")[0].getContext("2d");
     function init_user(){
         let user_base = {
@@ -21,7 +25,6 @@ $(function(){
     let my_color = Color.BLUE;
     let gamecanvas = new GameCanvas(game, ctx, new Point(0, 0), 1200, 1000, my_color);
 
-    $("")
     $("#cnvs").mousemove((e)=>{
 
         user.mouse = new Point(e.pageX-e.target.offsetLeft, e.pageY-e.target.offsetTop);

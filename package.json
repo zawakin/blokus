@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/zawawahoge/blokus#readme",
   "dependencies": {
+    "cookie-session": "^2.0.0-alpha.2",
+    "ejs": "^2.5.2",
     "express": "^4.14.0",
     "socket.io": "^1.5.1"
   }
