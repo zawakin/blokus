@@ -222,6 +222,7 @@ class GameCanvas extends BaseCanvas{
         if(canvas.pos.y + canvas.h > this.pos.y + this.h) dy = this.pos.y + this.h - (canvas.pos.y + canvas.h) - 3;
         canvas.pos = canvas.pos.add(new Point(dx, dy));
         canvas.dropped = false;
+        canvas.drop();
 
     }
 
@@ -414,6 +415,9 @@ class PieceCanvas extends BaseCanvas{
             this.piece.rotate(user.wheel, ip);
             // console.log("wheel" + " "+ this.n_rot30);
         }
+    }
+    drop(user){
+
     }
     draw(){
         let s_color = ColorInfo.forBoard[S_Color[this.piece.color]];

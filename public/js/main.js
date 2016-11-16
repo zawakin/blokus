@@ -1,8 +1,10 @@
 $(function(){
 
-    let socket = io();
+    const socket = io();
 
     let roomNum;
+
+    //自分で部屋番号をcookieから読み取りたいが、取得できないので、サーバー側にGETを送ってそれを教えてもらう。
     $.ajax({
         type : "GET",
         url : "/cookie",
@@ -37,7 +39,7 @@ $(function(){
     game.start();
 
     let my_color = Color.BLUE;
-    let gamecanvas = new GameCanvas(game, ctx, new Point(0, 0), 1200, 1000, my_color);
+    const gamecanvas = new GameCanvas(game, ctx, new Point(0, 0), 1200, 1000, my_color);
 
     $("#cnvs").mousemove((e)=>{
 
@@ -64,9 +66,10 @@ $(function(){
     });
 
     $("#cnvs").mousewheel((eo, delta, deltaX, deltaY)=>{
-        eo.preventDefault();
+        // eo.preventDefault();
         user.wheel = delta;
         // console.log(delta, deltaX, deltaY);
+        return false;
     });
     function render(){
         gamecanvas.update(user);

@@ -64,25 +64,22 @@ class Game{
     }
     next(te){
         if(this.state == State.STARTED){
-            this.wait(this.turn);
-
-            this.turn = this.turn % n_player + 1;
-            if(!this.is_continue()){
-                this.state = State.FINISHED;
+            if(this.board.can_put(te)){
+                this.board.put(te);
+            }else{
+                console.log("置けませんでした");
             }
-        }else{
-            console.log("game finished");
         }
     }
 
-    wait(color){
-        let player = this.players[color];
-        if(player.canput_some_piece(this.board)){
-            player.put(this.board);
-        }else{
-            console.log("skip");
-        }
-    }
+    // wait(color){
+    //     let player = this.players[color];
+    //     if(player.canput_some_piece(this.board)){
+    //         player.put(this.board);
+    //     }else{
+    //         console.log("skip");
+    //     }
+    // }
 
     is_continue(){
         return true;
@@ -111,24 +108,14 @@ class Player{
         }
         return res;
     }
-    canput_some_piece_on(board){
-        //可能な手を列挙する
-        return true;
-    }
     is_me(color){
         return this.color == color;
-    }
-    put(te,board){
-        board.put(te);
-    }
-    think(board){
-        let te = new Te();
     }
 
 }
 
 class Te{
-    //手の内部表現クラス（未実装）
+    //手の内部表現クラス
     constructor(ip, piece, n_rot, n_pivot){
         this.ip = ip;
         this.piece = piece;
@@ -218,9 +205,13 @@ class Board{
     }
 
     can_put(te){
-        // console.log(te.ip);
-        // console.log(te);
-        return te.ip.sum() == te.piece.content[te.n_pivot].sum();
+        //手が盤面におけるかどうかを判定する関数
+        if(te.ip.sum() != te.piece.content[te.n_pivot].sum()) return false;
+        let putable = true;
+        for(let ip of te.slided_content){
+            if(!this.on_board(ip)) putable = false;
+        }
+        return flag;
     }
 
     print(){
@@ -319,8 +310,6 @@ class IPoint{
 }
 
 var BasePieceSet = [
-    // [[0,0,1],[1,0,0],[0,1,0]],
-// [[0,0,1],[0,-1,0],[1,0,0],[0,0,-1]]
     [[-1,0,0],[0,0,1],[0,-1,0],[1,0,0],[0,0,-1],[0,1,0]],
     [[-1,1,1],[-1,0,0],[0,0,1],[0,1,0],[0,-1,0],[0,0,-1]],
     [[-1,1,1],[-1,0,0],[0,0,1],[0,1,0],[0,0,-1],[1,0,0]],
