@@ -16,6 +16,7 @@ $(function(){
 
     socket.emit("whereroom", roomNum);
 
+    console.log(document.cookie);
     console.log("hello " + roomNum);
     const ctx = $("#cnvs")[0].getContext("2d");
     function init_user(){
