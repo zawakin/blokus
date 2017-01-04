@@ -205,7 +205,7 @@ class Board{
     }
 
     can_put(te){
-        //手が盤面におけるかどうかを判定する関数
+        //手が盤面内におけるかどうかを判定する関数
         if(te.ip.sum() != te.piece.content[te.n_pivot].sum()) return false;
         let putable = true;
         for(let ip of te.slided_content){
@@ -213,6 +213,11 @@ class Board{
         }
         return flag;
     }
+
+    // check_okeru(te){
+    //     //手が他のピースと矛盾しないで置けるかどうかを判定する関数
+    //
+    // }
 
     print(){
     }
@@ -254,11 +259,13 @@ class IPoint{
         return new IPoint(this.k, this.i, this.j);
     }
     slide_content(te){
+        //手のピースのcontentを平行移動させるための関数
+        //
         let content = te.piece.content;
         let n_pivot = te.n_pivot;
         let res = [];
         let one = new IPoint(content[n_pivot].sum(),  0, 0);
-        if(one.i != 1 && one.i != -1) console.log("error");
+        if(one.i != 1 && one.i != -1) console.error("error");
         let offset = content[n_pivot].sub(one).add(this.sub(one));
         for(let grid of content){
             res.push(grid.add(offset).add(one.sub(content[n_pivot])));
