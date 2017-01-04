@@ -197,8 +197,15 @@ class GameCanvas extends BaseCanvas{
         }
 
         // this.mykomadaicanvas
-        for(let piece of this.mykomadaicanvas.piececanvases){
-            piece.tri_size = this.boardcanvas.tri_size;
+        for(let piececanvas of this.mykomadaicanvas.piececanvases){
+            piececanvas.tri_size = this.boardcanvas.tri_size;
+            if(piececanvas.dragging){
+                //ドラッグ中のピースがあれば、それをboardcanvasに知らせる
+                this.boardcanvas.update_te(piececanvas.piece);
+                console.log(piececanvas.piece.num);
+            }else{
+                this.boardcanvas.reset_te();
+            }
         }
 
     }
@@ -235,6 +242,7 @@ class BoardCanvas extends BaseCanvas{
         this.ip_cursor = new IPoint(-1000, -1000, -1000); //マウスのボード座標系表示
         this.selected = false;
         this._rot = 0;
+        this.nowte = null;
     }
     update(user){
         super.update(user);
@@ -263,6 +271,18 @@ class BoardCanvas extends BaseCanvas{
         }
         let size = 21 / 700 * this.w;
         this.tri_size = size;
+    }
+    update_te(piece){
+        if(this.contains_mouse()){
+            this.nowte = new Te(this.where_ijk(), piece);
+            console.log(this.nowte.ip);
+        }else{
+            this.nowte = null;
+        }
+
+    }
+    reset_te(){
+        this.nowte = null;
     }
     draw(){
         let size = this.tri_size;

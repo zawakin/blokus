@@ -119,8 +119,8 @@ class Te{
     constructor(ip, piece, n_rot, n_pivot){
         this.ip = ip;
         this.piece = piece;
-        this.n_rot = n_rot;
-        this.n_pivot = n_pivot;
+        this.n_rot = n_rot || 0;
+        this.n_pivot = n_pivot || 0;
         this.piece.rotate(n_rot, n_pivot);
     }
 
