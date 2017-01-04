@@ -81,5 +81,5 @@ $(function(){
         user.mouseup = false;
     }
 
-    setInterval(render, 10);
+    setInterval(render, 100);
 });
