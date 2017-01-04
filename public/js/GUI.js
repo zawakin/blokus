@@ -82,7 +82,6 @@ class BaseCanvas{
                 //それぞれのインデックスを一ずつ足す
                 res = res.add(IPoint.One());
             }
-            console.log(res);
             return res;
     }
 }
@@ -419,6 +418,7 @@ class PieceCanvas extends BaseCanvas{
     drop(user){
 
     }
+
     draw(){
         let s_color = ColorInfo.forBoard[S_Color[this.piece.color]];
         this.ctx.fillStyle = s_color;
@@ -455,10 +455,15 @@ class PieceCanvas extends BaseCanvas{
         }
     }
     contains_mouse(){
-        return super.contains_mouse();
-
+        let flag = false;
+        let ip = this.where_ijk(this.tri_size);
+        for(let ip_tri of this.piece.content){
+            if(ip_tri.equals(ip)){
+                return true;
+            }
+        }
+        return false;
     }
-
 }
 
 class TestCanvas extends BaseCanvas{
